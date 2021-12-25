@@ -1,0 +1,18 @@
+
+.loader-modal-class{
+    background-color: transparent;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: nowrap;
+    text-align: center;
+    border: none;
+}
+
+.second-dot-spinner{
+    animation-delay: 250ms;
+}
+
+.third-dot-spinner{
+    animation-delay: 500ms;
+}

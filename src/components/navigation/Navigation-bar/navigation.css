@@ -1,0 +1,52 @@
+.navigation-container{
+    position: fixed;
+    width: 100%;
+    z-index: 3;
+}
+
+.one-row{
+    border-bottom: solid 7px rgb(64, 226, 0);
+}
+
+.navbarHead{
+    font-family: 'Delius Unicase', cursive;
+    /* font-family: 'Permanent Marker', cursive;    */
+    font-size: 2rem;
+    color: rgb(64, 226, 0);
+    padding-left: 15px;
+}
+
+.navbar-item{
+    text-align: left;
+}
+
+.extra-spacing{
+    padding: 0 7px;
+}
+
+.navbar-item-link{
+    font-size: 1.5rem;
+    font-family: 'Delius Unicase', cursive;
+    color: rgb(64, 226, 0);
+}
+
+.navbar-item-link:hover{
+    color: #eee;
+}
+
+.navbar-menu-links{
+    align-self: center;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: center;
+}
+
+.offcanvas-tag{
+    background-color: rgba(0, 0, 0, .90);
+}
+
+.btn-close{
+    background-color: #fff;
+    border: 1px solid #000 ;
+}

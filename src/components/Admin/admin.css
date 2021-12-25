@@ -1,0 +1,205 @@
+.admin-page{
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+}
+
+.button-container{
+    text-align: right;
+}
+
+.admin-table-content{
+    font-size: 1rem !important;
+    font-family: 'Acme', sans-serif !important;
+    /* font-family: 'Alegreya', serif !important; */
+    /* font-family: 'Cinzel', serif !important; */
+    /* font-family: 'Delius Unicase', cursive !important; */
+    /* font-family: 'Permanent Marker', cursive !important; */
+}
+
+.admin-table-heading{
+    font-size: 1.2rem !important;
+}
+
+.admin-table-array-setup{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-content: center;
+    align-items: center;
+}
+
+.custom-table-pagination p{
+    margin-top: auto;
+}
+
+.music-details{
+    width: 90%;
+    margin-left: auto;
+}
+
+@media screen and (max-width: 991px){
+    .music-details{
+        width: 100%;
+    }
+}
+
+.table-edit-delete-button{
+    cursor: pointer;
+}
+
+.table-edit-delete-button:hover{
+    color: rgb(64, 226, 0);
+}
+
+.modal-header-title{
+    /* padding-left: 2rem; */
+    font-size: 2rem;
+    
+    font-family: 'Acme', sans-serif;
+    /* font-family: 'Alegreya', serif; */
+    /* font-family: 'Cinzel', serif; */
+    /* font-family: 'Delius Unicase', cursive; */
+    /* font-family: 'Permanent Marker', cursive; */
+}
+
+.music-detail-fields{
+    margin: 10px auto;
+    width: 100%;
+}
+
+.label-styling{
+    display: flex;
+    align-items: flex-end;
+    font-size: 1.2rem;
+    height: 100%;
+    margin-bottom: 0;
+    font-family: 'Alegreya', serif;
+}
+
+.label-styling-checkbox{
+    display: flex;
+    align-items: center;
+    font-size: 1.2rem;
+    height: 100%;
+    margin-bottom: 0;
+    font-family: 'Alegreya', serif;
+}
+
+.customized-form-label{
+    top: auto !important;
+    left: auto !important;
+    background-color: #fff !important;
+}
+
+.music-input-detail{
+    width: 100%;
+}
+
+.image-preview{
+    /* min-width: 60%; */
+    /* min-height: 30vh; */
+    width: 300px;
+    height: 300px;
+    margin: auto;
+    overflow: auto;
+    border-radius: 10px;
+    /* border: 2px solid #222; */
+    /* margin: 5px; */
+    padding: 15px;
+}
+
+.image-preview-img{
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    transition: .3s ease-in;
+}
+
+.image-preview-img:hover{
+    box-shadow: 0px 0px 15px rgb(42, 42, 42);
+    transform: scale(1.03);
+}
+
+.image-upload-button{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+    margin: 10px;
+    text-align: center;
+}
+
+.music-upload-space{
+    margin: 15px auto;
+}
+
+.music-upload-detail{
+    text-align: center;
+    margin: 10px auto;
+}
+
+.music-image-title{
+    padding: 0 10px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Acme', sans-serif;
+    /* font-family: 'Alegreya', serif; */
+    /* font-family: 'Cinzel', serif; */
+    
+}
+
+.existing-music-play-container{
+    padding: 0 10px;
+    cursor: pointer;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-content: center;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    width: 3rem;
+}
+
+.audio-duration{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+}
+
+.durationTimer{
+    font-family: monospace;
+    padding: 0 5px;
+}
+
+.admin-audio-progressBar{
+    --seek-before-width: 100px;
+}
+
+.add-music-button{
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    color: #0A0F18;
+    background-color: rgb(64, 226, 0);
+    border: 2px solid #fff;
+    border-radius: 50%;
+    padding: 8px;
+    box-shadow: 0 0 20px 10px #eee;
+    margin: 0;
+    box-shadow: 0 0 20px 10px #036403;
+}
+
+.add-music-button:focus,
+.add-music-button:hover, 
+.add-music-button:active{
+    box-shadow: 0 0 20px 10px #fff;
+    background-color: rgb(64, 226, 0);
+}
