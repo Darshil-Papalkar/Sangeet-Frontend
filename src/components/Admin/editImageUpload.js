@@ -10,7 +10,7 @@ const EditImageUpload = (props) => {
             <div className="image-preview">
                 <img 
                     className='image-preview-img' 
-                    src={apiLinks.getImage+props.imageKey} 
+                    src={props.imageKey && (apiLinks.getImage + props.imageKey)} 
                     alt={props.musicImgName} 
                 />
             </div>

@@ -11,8 +11,14 @@ const TextInput = (props) => {
     return (
         <Row className='music-detail-fields'>
             <Col className="mt-1 mb-1" xs="5">
-                <Label className="label-styling" for={props.id}>
-                    {props.labelName} {props.required ? <span style={{color: "#f00"}}> *</span> : ''}
+                <Label className="label-styling" style={{justifyContent: "flex-end"}} for={props.id}>
+                    {
+                        props.required ? 
+                        <>
+                            {props.labelName} <span style={{color: "#f00", alignSelf: "flex-start"}}>*</span>
+                        </> : 
+                        props.labelName
+                    }
                 </Label>
             </Col>
             <Col className="mt-1 mb-1" xs="7">

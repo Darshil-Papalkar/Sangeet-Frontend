@@ -1,10 +1,12 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Button, Modal, ModalHeader, ModalBody, ModalFooter, Row, Col} from 'reactstrap';
+import axios from 'axios';
 
 import TextInput from './textInput';
-import AddNewModal from './addNewModal';
 import CheckBoxInput from './checkBoxInput';
 import NewImageUpload from './newImageUpload';
+import { apiLinks } from '../../connection.config';
+import { Error } from '../Notification/Notification';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -18,49 +20,100 @@ const MenuProps = {
     },
 };
 
-const names = [
-    'Oliver Hansen',
-    'Van Henry',
-    'April Tucker',
-    'Ralph Hubbard',
-    'Omar Alexander',
-    'Carlos Abbott',
-    'Miriam Wagner',
-    'Bradley Wilkerson',
-    'Virginia Andrews',
-    'Kelly Snyder',
-];
-
 const NewMusicAdd = (props) => {
 
-    const [addGenreWidget, setAddGenreWidget] = useState(false);
-    const [addArtistWidget, setAddArtistWidget] = useState(false);
-    const [addCategoryWidget, setAddCategoryWidget] = useState(false);
+    const [genreList, setGenreList] = useState([]);
+    const [artistList, setArtistList] = useState([]);
+    const [categoryList, setCategoryList] = useState([]);
 
     const {genre, category, musicName, artist, musicImgPath, musicImgName, addMusicWidget, hiddenFileInput,
         hiddenMusicInput, uploadMusic, handleClick, handleChange, saveUploadMusic, handleMusicClick,
         uploadMusicImage, handleGenreChange, removeMusicDetails, removeSelectedSong, removeSelectedImage,
         updateAddMusicWidget, handleCategoryChange, musicTitle, albumTitle, setMusicTitle, setAlbumTitle} = props;
 
-    const onButtonClick = (event) => {
-        const id = event.target.id;
-        switch(id){
-            case 'add-1': 
-                setAddArtistWidget(prev => !prev);
-                break;
-            case 'add-2':
-                setAddGenreWidget(prev => !prev);
-                break;
-            case 'add-3':
-                setAddCategoryWidget(prev => !prev);
-                break;
-            default:
-                setAddGenreWidget(false);
-                setAddArtistWidget(false);
-                setAddCategoryWidget(false);
-                break;
-        }
-    };
+    useEffect(() => {
+
+        let genreController = new AbortController();
+        let artistController = new AbortController();
+        let categoryController = new AbortController();
+
+        const getGenreList = async () => {
+            try{
+                const response = await axios.get(apiLinks.getAllGenre, {
+                    signal: genreController.signal
+                });
+                if(response.data.code === 200){
+                    const data = response.data.message
+                    setGenreList(data);
+                    genreController = null;
+                }
+                else{ 
+                    Error(response.data.message);
+                    setGenreList([]);
+                }
+            }
+            catch(err){
+                console.log(err);
+                Error(err.message);
+                setGenreList([]);
+            }
+        };
+        
+        const getArtistList = async () => {
+            try{
+                const response = await axios.get(apiLinks.getAllArtists, {
+                    signal: artistController.signal
+                });
+                if(response.data.code === 200){
+                    const data = response.data.message
+                    setArtistList(data);
+                    artistController = null;
+                }
+                else{ 
+                    Error(response.data.message);
+                    setArtistList([]);
+                }
+            }
+            catch(err){
+                console.log(err);
+                Error(err.message);
+                setArtistList([]);
+            }
+        };
+
+        const getCategoryList = async () => {
+            try{
+                const response = await axios.get(apiLinks.getAllCategory, {
+                    signal: categoryController.signal
+                });
+                if(response.data.code === 200){
+                    const data = response.data.message
+                    setCategoryList(data);
+                    categoryController = null;
+                }
+                else{ 
+                    Error(response.data.message);
+                    setCategoryList([]);
+                }
+            }
+            catch(err){
+                console.log(err);
+                Error(err.message);
+                setCategoryList([]);
+            }
+        };
+
+        getGenreList();
+        getArtistList();
+        getCategoryList();
+
+        return () => {
+            genreController?.abort();
+            artistController?.abort();
+            categoryController?.abort();
+        };
+
+    }, []);
 
     return (
         <React.Fragment>
@@ -104,45 +157,28 @@ const NewMusicAdd = (props) => {
                                     id="artist-name" labelName="Artist Name"
                                     label="Select Artist" type={artist}
                                     handleChange={handleChange} MenuProps={MenuProps}
-                                    names={names}
+                                    names={artistList}
                                 />
                                 <CheckBoxInput 
                                     id="genre-name" labelName="Genre Name"
                                     label="Select Genre" type={genre}
                                     handleChange={handleGenreChange} MenuProps={MenuProps}
-                                    names={names}
+                                    names={genreList}
                                 />
                                 <CheckBoxInput 
                                     id="category-name" labelName="Category Name"
                                     label="Select Category" type={category}
                                     handleChange={handleCategoryChange} MenuProps={MenuProps}
-                                    names={names}
+                                    names={categoryList}
                                 />
 
-                                <Row className='music-detail-fields'>
-                                    <Col xs="4" className='mt-2 mb-3' style={{textAlign: "center"}}>
-                                        <Button id="add-1" color='dark' onClick={onButtonClick}>
-                                            Add Artists
-                                        </Button>
-                                    </Col>
-                                    <Col xs="4" className='mt-2 mb-3' style={{textAlign: "center"}}>
-                                        <Button id="add-2" color="dark" onClick={onButtonClick}>
-                                            Add Genre
-                                        </Button>
-                                    </Col>
-                                    <Col xs="4" className='mt-2 mb-3' style={{textAlign: "center"}}>
-                                        <Button id="add-3" color="dark" onClick={onButtonClick}>
-                                            Add Category
-                                        </Button>
-                                    </Col>
-                                </Row>
                             </div>
                         </Col>
                         <Col lg="6">
 
                             <Row>
                                 <div className='music-upload-button'>
-                                    <div className='music-upload-detail'>
+                                    <div className='music-upload-detail d-flex justify-content-center align-items-center'>
                                         <span className='music-image-title' style={{textAlign: "center"}}>
                                             " {musicName.trim().length === 0 ? "Select File" : musicName} "
                                         </span>
@@ -194,32 +230,7 @@ const NewMusicAdd = (props) => {
                 </ModalFooter>
             </Modal>
 
-            {addArtistWidget ? 
-                <AddNewModal 
-                    header="Add New Artist"
-                    toggle={setAddArtistWidget}
-                    id='1'
-                /> :
-                <React.Fragment />
-            }
             
-            {addGenreWidget ? 
-                <AddNewModal 
-                    header="Add New Genre"
-                    toggle={setAddGenreWidget}
-                    id='2'
-                /> :
-                <React.Fragment />
-            }
-            
-            {addCategoryWidget ? 
-                <AddNewModal 
-                    header="Add New Category"
-                    toggle={setAddCategoryWidget}
-                    id='3'
-                /> :
-                <React.Fragment />
-            }
         </React.Fragment>
     );
 };

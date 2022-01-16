@@ -1,0 +1,59 @@
+.navigation-container{
+    position: fixed;
+    width: 100%;
+    z-index: 3;
+}
+
+.top-one-row{
+    border-top: solid 3px rgb(64, 226, 0);
+}
+
+.image-box{
+    width: 10%;
+}
+
+.navbarHead-img-container{
+    width: 3rem;
+    height: 3rem;
+    overflow: hidden;
+    margin: auto;
+}
+
+.navbarHead-img{
+    width: 100%;
+    height: 100%;
+    /* transition: 4s; */
+}
+
+.navbarHead-img:hover{
+    animation: 2s rotate infinite linear;
+}
+
+@keyframes rotate{
+    from{
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.music-detail-box{
+    width: 40%;
+}
+
+.music-detail-box>*{
+    color: rgb(64, 226, 0);
+    
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.music-title{
+
+}
+
+.music-album{
+
+}

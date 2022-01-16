@@ -28,3 +28,4 @@ export const Error = (message, autoClose=5000) => {
         transition: Bounce
     });
 };
+

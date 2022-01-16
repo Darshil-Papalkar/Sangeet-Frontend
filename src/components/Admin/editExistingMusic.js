@@ -1,17 +1,16 @@
 import axios from 'axios';
 import React, { useState, useEffect, useRef } from 'react';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
-import StopCircleIcon from '@mui/icons-material/StopCircle';
 import PauseCircleIcon from '@mui/icons-material/PauseCircle';
+import StopCircleIcon from '@mui/icons-material/StopCircle';
 import LibraryMusicIcon from '@mui/icons-material/LibraryMusic';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Row, Col } from 'reactstrap';
 
 import TextInput from './textInput';
-import AddNewModal from './addNewModal';
 import CheckBoxInput from './checkBoxInput';
 import EditImageUpload from './editImageUpload';
 import { apiLinks } from '../../connection.config';
-import { Error } from "../Notification/Notification";
+import { Error, Success } from "../Notification/Notification";
 import { SpinnerRotate } from "../spinner/spinner-grow";
 
 const ITEM_HEIGHT = 48;
@@ -26,142 +25,193 @@ const MenuProps = {
     },
 };
 
-const names = [
-    'Oliver Hansen',
-    'Van Henry',
-    'April Tucker',
-    'Ralph Hubbard',
-    'Omar Alexander',
-    'Carlos Abbott',
-    'Miriam Wagner',
-    'Bradley Wilkerson',
-    'Virginia Andrews',
-    'Kelly Snyder',
-];
+// let audioRef;
 
 const EditExistingMusic = (props) => {
-
+    
     const audioRef = useRef();
-    const rangeRef = useRef();
-    const animationRef = useRef();
+    // const rangeRef = useRef();
+    // const animationRef = useRef();
 
-    const [endTime, setEndTime] = useState(0);
-    const [currentTime, setCurrentTime] = useState(0);
+    // const [endTime, setEndTime] = useState(0);
+    // const [currentTime, setCurrentTime] = useState(0);
 
     const [load, setLoad] = useState(false);
     const [playing, setPlaying] = useState(false);
+    const [currentPaused, setCurrentPaused] = useState(false);
 
     const [musicKey, setMusicKey] = useState("");
     const [musicImgKey, setMusicImgKey] = useState("");
 
-    const [musicName, setMusicName] = useState(props.musicTitle+".mp3");
-
-    const [addGenreWidget, setAddGenreWidget] = useState(false);
-    const [addArtistWidget, setAddArtistWidget] = useState(false);
-    const [addCategoryWidget, setAddCategoryWidget] = useState(false);
-
     const {genre, category, artist, musicTitle, albumTitle, editMusicWidget, editId,
-            handleChange,  setMusicTitle, Loader, setLoader,
+            handleChange,  setMusicTitle, setLoader, updateRow,
             setAlbumTitle, handleGenreChange, handleCategoryChange, 
             updateEditMusicWidget } = props;
-    
 
-    const onButtonClick = (event) => {
-        const id = event.target.id;
-        switch(id){
-            case 'add-1': 
-                setAddArtistWidget(prev => !prev);
-                break;
-            case 'add-2':
-                setAddGenreWidget(prev => !prev);
-                break;
-            case 'add-3':
-                setAddCategoryWidget(prev => !prev);
-                break;
-            default:
-                setAddGenreWidget(false);
-                setAddArtistWidget(false);
-                setAddCategoryWidget(false);
-                break;
-        }
+    const [genreList, setGenreList] = useState([]);
+    const [artistList, setArtistList] = useState([]);
+    const [categoryList, setCategoryList] = useState([]);
+    
+    const closeWidget = () => {
+        // cancelAnimationFrame(animationRef.current);
+        updateEditMusicWidget();
     };
 
-    const calculateTime = (time) => {
-        const minutes = Math.floor(time/60);
-        const returnMinutes = minutes >= 10 ? `${minutes}` : `0${minutes}`;
+    // const calculateTime = (time) => {
+    //     if(time !== Infinity){
+    //         const minutes = Math.floor(time/60);
+    //         const returnMinutes = minutes >= 10 ? `${minutes}` : `0${minutes}`;
+    
+    //         const seconds = Math.floor(time%60);
+    //         const returnSeconds = seconds >= 10 ? `${seconds}` : `0${seconds}`;
+    
+    //         return `${returnMinutes}:${returnSeconds}`;
+    //     }
+    // };
 
-        const seconds = Math.floor(time%60);
-        const returnSeconds = seconds >= 10 ? `${seconds}` : `0${seconds}`;
+    const stopSong = () => {
+        
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+        
+        setPlaying(prev => !prev);
+        if(currentPaused)
+            setCurrentPaused(prev => !prev);
+    };
 
-        return `${returnMinutes}:${returnSeconds}`;
+    const pauseSong = () => {
+        if(currentPaused)
+            audioRef.current.play();
+        else
+            audioRef.current.pause();
+        setCurrentPaused(prev => !prev);
     };
 
     const updateSongState = async () => {
-        
         setPlaying(prev => !prev);
-
         if(playing === false){
             try{
                 setLoad(true);
-                if(!audioRef.current.src){
-                    audioRef.current.src =  apiLinks.getAudio + musicKey;
-                    audioRef.current.loop = true;
-                }
+                // src={musicKey && (apiLinks.getAudio + musicKey)}
+                // audioRef.current.src = apiLinks.getAudio + musicKey;
                 audioRef.current.play();
-                animationRef.current = requestAnimationFrame(whilePlaying);
+                // audioRef.current.onended = () => {
+                //     setPlaying(prev => !prev);
+                // }
+                // animationRef.current = requestAnimationFrame(whilePlaying);
             }
             catch(err){
                 console.log("Error Occured while fetching audio", err);
                 Error(err.message);
             }
             finally{
-                audioRef.current.oncanplaythrough = () => {
-                    const secs = Math.floor(audioRef.current.duration);
-                    rangeRef.current.max = secs;
-                    setEndTime(secs);
-                    setLoad(false);
-                };
-                if(!(audioRef.current.paused))
-                    setLoad(false);
+                console.log(audioRef.current.duration);
+
+                if(audioRef.current){
+                    audioRef.current.oncanplaythrough  = () => {
+                        console.log(audioRef.current.duration);
+                        
+                        // const secs = Math.floor(audioRef.current.duration);
+                        // rangeRef.current.max = secs;
+                        // setEndTime(secs);
+                        setLoad(false);
+                    }
+
+                    if(!(audioRef.current.paused) && audioRef.current.readyState > 0)
+                        setLoad(false);
+                }
+
             }
-            
         }
         else{
             audioRef.current.pause();
-            cancelAnimationFrame(animationRef.current);
+            // cancelAnimationFrame(animationRef.current);
         }
 
     };
 
     const saveEditFile = async () => {
 
+        try{
+            setLoader(true);
+            
+            const today = new Date().toISOString();
+            const formData = {
+                "musicTitle": musicTitle,
+                "albumTitle": albumTitle,
+                "artist": JSON.stringify(artist),
+                "genre": JSON.stringify(genre),
+                "category": JSON.stringify(category),
+                "date": today,
+            };
+
+            const response = await axios.put(apiLinks.updateAdminData+editId, formData, {
+                headers: {
+                    'Content-Type' : 'application/json'
+                }
+            });
+            
+            if(response.data.code === 200){
+                updateRow(response.data.data);
+                Success(response.data.message);
+            }
+            else{
+                Error(response.data.message);
+            }
+
+            // console.log(response.data);
+        }
+        catch(err){
+            console.log("An Error Occured while updating data", err);
+            Error(err.message);
+        }
+        finally{
+            setLoader(false);
+            closeWidget();
+        }
+
     };
 
-    const changePlayerCurrentTime = () => {
-        rangeRef.current.style.setProperty('--seek-before-width', `${(rangeRef.current.value / endTime) * 100}%`);
-        setCurrentTime(rangeRef.current.value);
-    };
+    // const changePlayerCurrentTime = () => {
+    //     rangeRef.current.style.setProperty('--seek-before-width', `${(Number(rangeRef.current.value) / endTime) * 100}%`);
+    //     setCurrentTime(rangeRef.current.value);
+    // };
 
-    const changeRange = () => {
-        console.log(rangeRef.current.value);
-        audioRef.current.currentTime = parseInt(rangeRef.current.value);
-        console.log(audioRef.current.currentTime);
-        changePlayerCurrentTime();
-    };
+    // const changeRange = async (event) => {
+    //     try{
+    //         rangeRef.current.value = event.target.value;     
+    //         audioRef.current.src = apiLinks.getAudio + musicKey;
+    //         audioRef.current.play();
+    //         audioRef.current.addEventListener('canplay', () => {
+    //             audioRef.current.currentTime = parseInt(event.target.value);
+    //         });
+    //         changePlayerCurrentTime();
+    //     }
+    //     catch(err){
+    //         console.log("An Error Occured", err.message);
+    //     }
+    // };
 
-    const whilePlaying = () => {
-        rangeRef.current.value = audioRef.current.currentTime;
-        changePlayerCurrentTime();
-        animationRef.current = requestAnimationFrame(whilePlaying);
-    };
+    // const whilePlaying = () => {
+        // rangeRef.current.value = audioRef.current.currentTime;
+        // changePlayerCurrentTime();
+        // animationRef.current = requestAnimationFrame(whilePlaying);
+
+    // };
 
     useEffect(() => {
 
+        let imgFileController = new AbortController();
+        let audioFileController = new AbortController();
+
         const getImageFileKey = async () => {
             try{
-                const response = await axios.get(apiLinks.getImageKey+editId);
+                const response = await axios.get(apiLinks.getImageKey+editId, {
+                    signal: imgFileController.signal
+                });
                 if(response.data.code === 200){
                     setMusicImgKey(response.data.message.musicImageKey);
+                    imgFileController = null;
                 }
                 else{
                     Error(response.data.message);
@@ -177,9 +227,12 @@ const EditExistingMusic = (props) => {
 
         const getAudioFileKey = async () => {
             try{
-                const response = await axios.get(apiLinks.getAudioKey+editId);
+                const response = await axios.get(apiLinks.getAudioKey+editId, {
+                    signal: audioFileController.signal
+                });
                 if(response.data.code === 200){
                     setMusicKey(response.data.message.musicKey);
+                    audioFileController = null;
                 }
                 else{
                     Error(response.data.message);
@@ -193,8 +246,96 @@ const EditExistingMusic = (props) => {
 
         getAudioFileKey();
 
+        return () => {
+            imgFileController?.abort();
+            audioFileController?.abort();
+        }
 
     }, [editId]);
+
+    useEffect(() => {
+
+        let genreController = new AbortController();
+        let artistController = new AbortController();
+        let categoryController = new AbortController();
+
+        const getGenreList = async () => {
+            try{
+                const response = await axios.get(apiLinks.getAllGenre, {
+                    signal: genreController.signal
+                });
+                if(response.data.code === 200){
+                    const data = response.data.message.map(item => item.type);
+                    setGenreList(data);
+                    genreController =  null;
+                }
+                else{ 
+                    Error(response.data.message);
+                    setGenreList([]);
+                }
+            }
+            catch(err){
+                console.log(err);
+                Error(err.message);
+                setGenreList([]);
+            }
+        };
+        
+        const getArtistList = async () => {
+            try{
+                const response = await axios.get(apiLinks.getAllArtists, {
+                    signal: artistController.signal
+                });
+                if(response.data.code === 200){
+                    const data = response.data.message.map(item => item.name);
+                    setArtistList(data);
+                    artistController = null;
+                }
+                else{ 
+                    Error(response.data.message);
+                    setArtistList([]);
+                }
+            }
+            catch(err){
+                console.log(err);
+                Error(err.message);
+                setArtistList([]);
+            }
+        };
+
+        const getCategoryList = async () => {
+            try{
+                const response = await axios.get(apiLinks.getAllCategory, {
+                    signal: categoryController.signal
+                });
+                if(response.data.code === 200){
+                    const data = response.data.message.map(item => item.type);
+                    setCategoryList(data);
+                    categoryController = null;
+                }
+                else{ 
+                    Error(response.data.message);
+                    setCategoryList([]);
+                }
+            }
+            catch(err){
+                console.log(err);
+                Error(err.message);
+                setCategoryList([]);
+            }
+        };
+
+        getGenreList();
+        getArtistList();
+        getCategoryList();
+
+        return () => {
+            genreController?.abort();
+            artistController?.abort();
+            categoryController?.abort();
+        };
+
+    }, []);
 
     return (
         <React.Fragment>
@@ -205,9 +346,9 @@ const EditExistingMusic = (props) => {
                 scrollable={true}
                 backdrop
                 size='xl'
-                toggle={updateEditMusicWidget}
+                toggle={closeWidget}
             >
-                <ModalHeader toggle={updateEditMusicWidget}>
+                <ModalHeader toggle={closeWidget}>
                     <span className='modal-header-title'>
                         Edit Existing Song
                     </span>
@@ -237,38 +378,20 @@ const EditExistingMusic = (props) => {
                                     id="artist-name" labelName="Artist Name"
                                     label="Select Artist" type={artist}
                                     handleChange={handleChange} MenuProps={MenuProps}
-                                    names={names}
+                                    names={artistList}
                                 />
                                 <CheckBoxInput 
                                     id="genre-name" labelName="Genre Name"
                                     label="Select Genre" type={genre}
                                     handleChange={handleGenreChange} MenuProps={MenuProps}
-                                    names={names}
+                                    names={genreList}
                                 />
                                 <CheckBoxInput 
                                     id="category-name" labelName="Category Name"
                                     label="Select Category" type={category}
                                     handleChange={handleCategoryChange} MenuProps={MenuProps}
-                                    names={names}
+                                    names={categoryList}
                                 />
-
-                                <Row className='music-detail-fields'>
-                                    <Col xs="4" className='mt-2 mb-3' style={{textAlign: "center"}}>
-                                        <Button id="add-1" color='dark' onClick={onButtonClick}>
-                                            Add Artists
-                                        </Button>
-                                    </Col>
-                                    <Col xs="4" className='mt-2 mb-3' style={{textAlign: "center"}}>
-                                        <Button id="add-2" color="dark" onClick={onButtonClick}>
-                                            Add Genre
-                                        </Button>
-                                    </Col>
-                                    <Col xs="4" className='mt-2 mb-3' style={{textAlign: "center"}}>
-                                        <Button id="add-3" color="dark" onClick={onButtonClick}>
-                                            Add Category
-                                        </Button>
-                                    </Col>
-                                </Row>
                             </div>
                         </Col>
                         <Col lg="6">
@@ -277,10 +400,9 @@ const EditExistingMusic = (props) => {
                                 <div className='music-upload-button'>
                                     <div className='music-upload-detail'>
                                         <span className='music-image-title' style={{textAlign: "center"}}>
-                                            <LibraryMusicIcon /> &ensp; " {musicName} "
+                                            <LibraryMusicIcon /> &ensp; " {props.musicTitle+".mp3"} "
                                             <span 
-                                                className='existing-music-play-container' 
-                                                onClick={updateSongState} 
+                                                className='pl-3 existing-music-play-container' 
                                             >
                                                 {
                                                     playing ?
@@ -291,26 +413,33 @@ const EditExistingMusic = (props) => {
                                                                     color="dark"
                                                                 /> : 
                                                                 <>
-                                                                    <PauseCircleIcon title="Stop Playing" />
+                                                                    {
+                                                                        currentPaused ? 
+                                                                        <PlayCircleIcon title="Resume Playing" onClick={pauseSong} /> :
+                                                                        <PauseCircleIcon title="Pause Playing" onClick={pauseSong} />
+                                                                    }
+                                                                    <StopCircleIcon title="Stop Playing" onClick={stopSong} />
                                                                 </> 
                                                         )
                                                         :
-                                                        <PlayCircleIcon title="Play this Song" />
+                                                        <PlayCircleIcon title="Play this Song" onClick={updateSongState} />
                                                 }
                                             </span>
                                         </span>
                                     </div>
                                     <div className='audio-duration'>
-                                        <audio id="music_player" ref={audioRef} />
-                                        <span className='durationTimer'>{calculateTime(currentTime)}</span>
+                                        <audio ref={audioRef} 
+                                            src={musicKey && (apiLinks.getAudio + musicKey)}
+                                        />
+                                        {/* <span className='durationTimer'>{calculateTime(currentTime)}</span>
                                         <input 
                                             type="range" 
                                             ref={rangeRef} 
                                             defaultValue={0}
-                                            onChange={changeRange} 
+                                            // onChange={changeRange} 
                                             className='admin-audio-progressBar'
                                         />
-                                        <span className='durationTimer'>{!isNaN(endTime) && calculateTime(endTime)}</span>
+                                        <span className='durationTimer'>{!isNaN(endTime) && calculateTime(endTime)}</span> */}
                                     </div>
                                 </div>
                             </Row>
@@ -333,33 +462,7 @@ const EditExistingMusic = (props) => {
 
                 </ModalFooter>
             </Modal>
-
-            {addArtistWidget ? 
-                <AddNewModal 
-                    header="Add New Artist"
-                    toggle={setAddArtistWidget}
-                    id='1'
-                /> :
-                <React.Fragment />
-            }
             
-            {addGenreWidget ? 
-                <AddNewModal 
-                    header="Add New Genre"
-                    toggle={setAddGenreWidget}
-                    id='2'
-                /> :
-                <React.Fragment />
-            }
-            
-            {addCategoryWidget ? 
-                <AddNewModal 
-                    header="Add New Category"
-                    toggle={setAddCategoryWidget}
-                    id='3'
-                /> :
-                <React.Fragment />
-            }
         </React.Fragment>
     );
 };

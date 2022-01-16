@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -12,16 +12,13 @@ import { Delete, Edit } from "@mui/icons-material";
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 
 const columns = [
-  { id: 'musicTitle', label: 'Music Name', minWidth: 170 },
-  { id: 'albumTitle', label: 'Album Name', minWidth: 170 },
-  { id: 'artists', label: 'Artists', minWidth: 70 },
-  { id: 'genre', label: 'Genre', minWidth: 70, align: "center" },
-  { id: 'category', label: 'Category', minWidth: 70, align: "center" },
+  { id: 'srno', label: 'Sr. No.', minWidth: 80, align: "center" },
+  { id: 'type', label: 'Genre Type', minWidth: 100, align: "left" },
 ];
 
-export default function StickyHeadTable(props) {
+const GenreTable = (props) => {
 
-  const rows = props.rows;
+  const rows = props.rows || [];
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -34,19 +31,17 @@ export default function StickyHeadTable(props) {
     setPage(0);
   };
 
+  useEffect(() => {
+    setPage(0);
+  }, [props.rows]);
+  
   return (
-    <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+    <Paper sx={{ width: '100%', overflow: 'hidden' }} className="bg-fade">
       <TableContainer>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
             <TableRow>
-              <TableCell
-                className="admin-table-content admin-table-heading" 
-                align="center"
-                style={{minWidth: 100}}
-              >
-                Sr. No.
-              </TableCell>
+
               {columns.map((column) => (
                 <TableCell
                   className="admin-table-content admin-table-heading"
@@ -57,9 +52,11 @@ export default function StickyHeadTable(props) {
                   {column.label}
                 </TableCell>
               ))}
+
               <TableCell
                 className="admin-table-content admin-table-heading"
                 align='center'
+                key="edit"
                 style={{ maxWidth: 60 }}
               >
                 Edit
@@ -67,10 +64,12 @@ export default function StickyHeadTable(props) {
               <TableCell
                 className="admin-table-content admin-table-heading"
                 align="center"
+                key="delete"
                 style={{ maxWidth: 100 }}
               >
                 Delete
               </TableCell>
+
             </TableRow>
           </TableHead>
           <TableBody>
@@ -78,20 +77,22 @@ export default function StickyHeadTable(props) {
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row, index) => {
                 return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                    <TableCell
+                  <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
+                    {/* <TableCell
                       className="admin-table-content" 
                       key={index}
                       align="center"
                       style={{ minWidth: 100 }}
                     >
-                      {index+1}.
-                    </TableCell>
-                    {columns.map((column) => {
-                      const value = row[column.id];
+                      {(rowsPerPage*page) + (index+1)}.
+                    </TableCell> */}
+                    {columns.map((column, idx) => {
+                        let value;
+                        if(column.id !== 'srno')
+                            value = row[column.id];
                       return (
                         <TableCell
-                          className="admin-table-content" key={column.id} align={column.align}>
+                          className="admin-table-content" key={idx} align={column.align}>
                           {typeof value === 'object' ? 
                             value.map((item) => {
                               return (
@@ -101,17 +102,17 @@ export default function StickyHeadTable(props) {
                                 </div>
                               );
                             })
-                          : value}
+                          : column.id === 'srno' ? (`${(rowsPerPage*page) + (index+1)}.`) : value}
                         </TableCell>
                       );
                     })}
                     <TableCell
                       className="admin-table-content" key={Math.random()} align="center" style={{ maxWidth: 60 }}>
-                      <Edit className="table-edit-delete-button" onClick={() => props.editRow(row.id)} />
+                      <Edit className="table-edit-delete-button" onClick={() => props.editGenre(row.id, 'genre')} />
                     </TableCell>
                     <TableCell
                       className="admin-table-content" key={Math.random()} align="center" style={{ maxWidth: 100 }}>
-                      <Delete className="table-edit-delete-button" onClick={() => props.deleteRow(row.id)} />
+                      <Delete className="table-edit-delete-button" onClick={() => props.toggleWarning(row.id)} />
                     </TableCell>
                   </TableRow>
                 );
@@ -132,3 +133,5 @@ export default function StickyHeadTable(props) {
     </Paper>
   );
 }
+
+export default GenreTable;

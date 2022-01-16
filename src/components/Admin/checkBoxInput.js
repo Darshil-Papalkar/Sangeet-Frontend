@@ -9,7 +9,7 @@ const CheckBoxInput = (props) => {
         <FormControl sx={{width: '100%'}}>
             <Row className='music-detail-fields'>
                 <Col className="mt-2 mb-3" xs="5">
-                    <Label className="label-styling-checkbox" 
+                    <Label className="label-styling-checkbox" style={{ justifyContent: "flex-end" }}
                         for={props.id}>
                         {props.labelName}
                     </Label>
@@ -38,9 +38,9 @@ const CheckBoxInput = (props) => {
                         MenuProps={props.MenuProps}
                     >
                     {props.names.map((name) => (
-                        <MenuItem key={name} value={name}>
-                        <Checkbox checked={props.type.indexOf(name) > -1} />
-                        <ListItemText primary={name} />
+                        <MenuItem key={Math.floor(Math.random() * 10000 + 1)} value={name.name || name.type || name}>
+                            <Checkbox checked={props.type.indexOf(name.name || name.type || name) > -1} />
+                            <ListItemText primary={name.name || name.type || name} />
                         </MenuItem>
                     ))}
                     </Select>

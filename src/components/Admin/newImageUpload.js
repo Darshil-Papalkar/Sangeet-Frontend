@@ -13,7 +13,7 @@ const NewImageUpload = (props) => {
                 />
             </div>
             <div className='image-upload-button'>
-                <div className='music-upload-space'>
+                <div className='music-upload-space d-flex justify-content-center align-items-center'>
                     <span className='music-image-title'>
                         " {props.musicImgName === "" ? "Select Image" : props.musicImgName} "
                     </span>

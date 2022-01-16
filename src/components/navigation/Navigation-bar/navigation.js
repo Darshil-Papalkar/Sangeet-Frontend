@@ -30,7 +30,7 @@ const Navigation = (props) => {
                     </NavbarBrand>
                     <NavbarToggler className="me-2" onClick={updateNavClick} />
                     
-                    <Offcanvas isOpen={isOpen} className="offcanvas-tag" scrollable={false}
+                    <Offcanvas isOpen={isOpen} className="offcanvas-tag" scrollable={true}
                         toggle={updateNavClick} direction="end">
                         <OffcanvasHeader toggle={updateNavClick}>
 
