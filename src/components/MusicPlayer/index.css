@@ -1,15 +1,23 @@
-.navigation-container{
+.bottom-navigation-container{
     position: fixed;
     width: 100%;
     z-index: 3;
+    bottom: 0;
+}
+
+.custom-bottom-navigation{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    align-content: center;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    gap: 1rem;
+    padding: 1rem;
 }
 
 .top-one-row{
     border-top: solid 3px rgb(64, 226, 0);
-}
-
-.image-box{
-    width: 10%;
 }
 
 .navbarHead-img-container{
@@ -39,7 +47,13 @@
 }
 
 .music-detail-box{
-    width: 40%;
+    width: 60%;
+}
+
+@media screen and (max-width: 1024px) {
+    .music-detail-box{
+        width: 40%;
+    }
 }
 
 .music-detail-box>*{
@@ -50,10 +64,20 @@
     text-overflow: ellipsis;
 }
 
-.music-title{
-
+.custom-button-group-container{
+    position: fixed;
+    right: 1rem;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.music-album{
-
+.custom-button-group{
+    color: #eee;
+    text-align: center;
 }
+
+/* .custom-button-group>*{
+    font-size: 2.5em !important;
+} */
