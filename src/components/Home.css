@@ -1,6 +1,3 @@
-.card-items{
-}
-
 .slider-container{
     width: 100%;
 }
@@ -20,15 +17,44 @@
 .card-image-container{
     width: 90%;
     margin: auto;
-    height: 250px;
+    height: 120px;
     display: flex;
+    overflow: hidden;
+    border-radius: 10px;
 }
 
 .card-image{
     width: 100%;
     height: 100%;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
+    color: #eee;
+    text-align: center;
+    transition: .5s ease-in-out;
+}
+
+.card-image:hover{
+    transform: scale(1.2);
+}
+
+.artist-card-image-container{
+    width: 150px;
+    height: 150px;
+    margin: auto;
+    overflow: hidden;
+}
+
+@media screen and (max-width: 524px) {
+    .artist-card-image-container{
+        width: 120px;
+        height: 120px;
+    }
+}
+
+.artist-card-image{
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    color: #eee;
+    text-align: center;
 }
 
 .card-text-container{
@@ -42,13 +68,22 @@
     padding: 0rem 1rem;
 }
 
-.card-text>h3,
+.card-text>h4,
 .card-text>h5,
 .card-text>h6{
     color: rgb(64, 226, 0) !important;
     margin: 0;
-    line-height: 1.75rem;
+    line-height: 1.5rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.card-text>h4:hover,
+.card-text>h5:hover,
+.album-title:hover,
+.artist-name:hover{
+    color: #fff !important;
+    /* text-decoration: underline; */
+    cursor: pointer;
 }

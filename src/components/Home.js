@@ -1,9 +1,9 @@
 import axios from "axios";
 import Slider from "react-slick";
-import React, { useEffect, useReducer } from "react";
 import { Container } from 'reactstrap';
+import React, { useEffect, useReducer, useState } from "react";
 
-import Error from "./Error";
+import { Error } from "./Notification/Notification";
 import MusicPlayer from "./MusicPlayer";
 import { apiLinks } from '../connection.config';
 import Navigation from "./navigation/Navigation-bar/navigation";
@@ -71,9 +71,6 @@ const reducer = (state, action) => {
                 }
             }
 
-            console.log(categoryList['New Releases']);
-            console.log(categoryList['Popular English Songs']);
-
             const list = {
                 genreList,
                 albumList,
@@ -99,7 +96,7 @@ const settings = {
     lazyLoad: "ondemand",
     infinite: false,
     speed: 500,
-    slidesToShow: 4,
+    slidesToShow: 5,
     slidesToScroll: 1,
     swipeToSlide: true,
     easing: "linear",
@@ -107,19 +104,58 @@ const settings = {
         {
           breakpoint: 1024,
           settings: {
-            slidesToShow: 3,
+            slidesToShow: 4,
           }
         },
         {
           breakpoint: 600,
           settings: {
-            slidesToShow: 2
+            slidesToShow: 3
           }
         },
         {
           breakpoint: 480,
           settings: {
-            slidesToShow: 1
+            slidesToShow: 2
+          }
+        },
+        {
+            breakpoint: 320,
+            setting: {
+                slidesToShow: 1
+            }
+        }
+    ]
+};
+
+const artistSettings = {
+    dots: false,
+    arrows: false,
+    draggable: true,
+    lazyLoad: "ondemand",
+    infinite: false,
+    speed: 500,
+    slidesToShow: 5,
+    slidesToScroll: 1,
+    swipeToSlide: true,
+    easing: "linear",
+    responsive: [
+        {
+          breakpoint: 1024,
+          settings: {
+            slidesToShow: 4,
+          }
+        },
+        {
+          breakpoint: 600,
+          settings: {
+            slidesToShow: 3
+          }
+        },
+        {
+          breakpoint: 480,
+          settings: {
+            slidesToShow: 2
           }
         }
     ]
@@ -128,6 +164,18 @@ const settings = {
 const Home = () => {
 
     const [list, dispatch] = useReducer(reducer, musicList);
+    const [playlist, setPlaylist] = useState([]);
+    const [currentSong, setCurrentSong] = useState({});
+
+    const loadAudio = (ll, item, e) => {
+        if(e)
+            e.preventDefault();
+        setPlaylist(ll);
+        setCurrentSong(item);
+        // console.log(ll, item);
+    };
+
+    console.log(currentSong, playlist);
 
     useEffect(() => {
         let abortController = new AbortController();
@@ -156,57 +204,116 @@ const Home = () => {
 
     }, []);
 
-    console.log(list);
-
     return (
         <div className="App">
             <Navigation />
-            <Container fluid>
+            <Container key='category-container' fluid>
                 {list.categoryList ?  
-                        Object.keys(list.categoryList).map(catList => {
-                            let ll = [];
-                            if(catList !== 'New Releases')
-                                ll = list.categoryList[catList].sort(() => Math.random() - 0.5);
-                            else
-                                ll = list.categoryList[catList];
-                            return (
-                                <Container key={catList} fluid className="slider-container">
-                                    <h2 className="category-list-heading" title={catList}>{catList}</h2>
-                                    <Slider {...settings}>
-                                        {ll.map(item => {
-                                            return (
-                                                <div key={item.id} className="mt-3 mb-3 custom-card-items">
-                                                    <div className="card-image-container">
-                                                        <img 
-                                                            src={apiLinks.getImage + item.musicImageKey} 
-                                                            alt={item.musicTitle} 
-                                                            className="card-image"
-                                                        />
-                                                    </div>
-                                                    <div className="card-text-container">
-                                                        <div className="card-text">
-                                                            <h3 title={item.musicTitle}>
+                    Object.keys(list.categoryList).map(catList => {
+                        let ll = [];
+                        if(catList === 'New Releases')
+                            ll = list.categoryList[catList].sort((a, b) => {
+                                let keyA = new Date(a.timeStamp);
+                                let keyB = new Date(b.timeStamp);
+                                if(keyA < keyB) return 1;
+                                else if(keyA > keyB) return -1;
+                                else return 0;
+                            });
+                        else
+                            ll = list.categoryList[catList];
+
+                        return (
+                            <Container key={catList} fluid className=" mt-3 slider-container">
+                                <h2 className="category-list-heading" title={catList}>{catList}</h2>
+                                <Slider {...settings}>
+                                    {ll.map(item => {
+                                        return (
+                                            <div key={item.id} className="mt-3 mb-3 custom-card-items">
+                                                <div className="card-image-container">
+                                                    <img 
+                                                        src={apiLinks.getImage + item.musicImageKey} 
+                                                        alt={item.musicTitle} 
+                                                        className="card-image"
+                                                    />
+                                                </div>
+                                                <div className="card-text-container">
+                                                    <div className="card-text">
+                                                        <h5 className="pt-3" title={`Play ${item.musicTitle}`}>
+                                                            <span style={{cursor: "pointer"}} onClick={(e) => loadAudio(ll, item, e)}>
                                                                 {item.musicTitle}
-                                                            </h3>
-                                                            <h5 title={item.albumTitle}>
-                                                                {item.albumTitle}
-                                                            </h5>
-                                                            <h6 title={item.artists.join(', ')}>
-                                                                {item.artists.join(', ')}
-                                                            </h6>
-                                                        </div>
+                                                            </span>
+                                                        </h5>
+                                                        <h6 style={{cursor: "pointer"}} className="album-title" title={`Listen ${item.albumTitle}`}>
+                                                            {item.albumTitle}
+                                                        </h6>
+                                                        <h6>
+                                                            {item.artists.map((artist, idx) => {
+                                                                return (
+                                                                    <React.Fragment>
+                                                                        <span style={{cursor: "pointer"}} title={`Listen to ${artist}`} className="artist-name" key={artist}>
+                                                                            {artist}
+                                                                        </span>
+                                                                        <span key={idx}>
+                                                                            {item.artists?.length - 1 > idx ? `, ` : ``}
+                                                                        </span>
+                                                                    </React.Fragment>
+
+                                                                )
+                                                            })}
+                                                            {/* {item.artists.join(', ')} */}
+                                                        </h6>
                                                     </div>
                                                 </div>
-                                            );
-                                        })}
-                                    </Slider>
-                                </Container>
-                            );
-                        })
+                                            </div>
+                                        );
+                                    })}
+                                </Slider>
+                            </Container>
+                        );
+                    })
                 : <React.Fragment />
                 }
             </Container>
-            <MusicPlayer />
+            <Container key="artist-container" className="mt-5" fluid>
+                { list.artistList ? 
+                    <Container className="slider-container" fluid>
+                        <h2 className="category-list-heading" title="Artists">Artists</h2>
+                        <Slider {...artistSettings}>
+                        { Object.keys(list.artistList).map((artist, id) => {
+                            return (
+                                <div key={id} className="mt-3 mb-3 custom-card-items">
+                                    <div className="artist-card-image-container">
+                                        <img 
+                                            src={apiLinks.getArtistImgFromName + artist} 
+                                            alt={artist} 
+                                            className="artist-card-image"
+                                        />
+                                    </div>
+                                    <div className="card-text-container">
+                                        <div className="card-text" style={{textAlign: "center"}}>
+                                            <h4 className="pt-3" title={artist}>
+                                                {artist}
+                                            </h4>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                        </Slider>
+                    </Container>
+                 : <React.Fragment /> }
+            </Container>
+            <Container className="pt-3" />
+            {
+                playlist.length ? 
+                    <MusicPlayer 
+                        currentSong={currentSong}
+                        playlist={playlist}
+                        setCurrentSong={setCurrentSong}
+                        loadAudio={loadAudio}
+                    />
+                    : <React.Fragment />
+            }
         </div>
     );
 };

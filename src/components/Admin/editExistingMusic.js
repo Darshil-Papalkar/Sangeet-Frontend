@@ -95,9 +95,10 @@ const EditExistingMusic = (props) => {
                 // src={musicKey && (apiLinks.getAudio + musicKey)}
                 // audioRef.current.src = apiLinks.getAudio + musicKey;
                 audioRef.current.play();
-                // audioRef.current.onended = () => {
-                //     setPlaying(prev => !prev);
-                // }
+                audioRef.current.onended = () => {
+                    setCurrentPaused(prev => !prev);
+                    setPlaying(prev => !prev);
+                }
                 // animationRef.current = requestAnimationFrame(whilePlaying);
             }
             catch(err){
@@ -105,7 +106,6 @@ const EditExistingMusic = (props) => {
                 Error(err.message);
             }
             finally{
-                console.log(audioRef.current.duration);
 
                 if(audioRef.current){
                     audioRef.current.oncanplaythrough  = () => {

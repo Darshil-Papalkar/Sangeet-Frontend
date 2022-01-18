@@ -11,6 +11,7 @@ apiLinks.getImage = apiLinks.baseURL+"image/";
 apiLinks.getAudioKey = apiLinks.baseURL+"audioKey/";
 apiLinks.getImageKey = apiLinks.baseURL+"imageKey/";
 apiLinks.getArtistImgKey = apiLinks.baseURL+"artistImageKey/";
+apiLinks.getArtistImgFromName = apiLinks.baseURL+"getImageByArtistName/";
 apiLinks.getAllAudio = apiLinks.baseURL+"getAllMusic";
 apiLinks.getAllAudioDetails = apiLinks.baseURL+"getAllMusicDetails";
 apiLinks.getAllArtists = apiLinks.baseURL+"getAllArtists";
