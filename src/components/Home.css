@@ -10,8 +10,11 @@
 
 .category-list-heading{
     color: #fff;
-    padding-left: 1rem;
-    
+    padding-left: 1rem;   
+}
+
+.custom-card-items:focus-visible{
+    outline: none;
 }
 
 .card-image-container{

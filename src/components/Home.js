@@ -1,7 +1,7 @@
 import axios from "axios";
 import Slider from "react-slick";
 import { Container } from 'reactstrap';
-import React, { useEffect, useReducer, useState } from "react";
+import React, { useEffect, useReducer, useRef, useState } from "react";
 
 import { Error } from "./Notification/Notification";
 import MusicPlayer from "./MusicPlayer";
@@ -162,6 +162,7 @@ const artistSettings = {
 };
 
 const Home = () => {
+    const player = useRef(null);
 
     const [list, dispatch] = useReducer(reducer, musicList);
     const [playlist, setPlaylist] = useState([]);
@@ -175,7 +176,29 @@ const Home = () => {
         // console.log(ll, item);
     };
 
-    console.log(currentSong, playlist);
+    // console.log(currentSong, playlist);
+        
+    const handleKeyPress = (e) => {
+        switch(e.code){
+            case 'Space':  
+                e.preventDefault();
+                if(player.current)
+                    player?.current?.handlePlayPause();
+                break;
+            case 'ArrowLeft':
+                e.preventDefault();
+                if(player.current)
+                    player?.current?.handlePrevSong();
+                break;
+            case 'ArrowRight':
+                e.preventDefault();
+                if(player.current)
+                    player?.current?.handleNextSong();
+                break;
+            default:
+                break;
+        }
+    };
 
     useEffect(() => {
         let abortController = new AbortController();
@@ -191,6 +214,13 @@ const Home = () => {
                 else{
                     dispatch({ type: 'FETCH_ERROR', message: response.data.message });
                 }
+                
+                // window?.addEventListener('keydown', function(e){
+                //     if(["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].indexOf(e.code) > -1)
+                //         console.log(e);
+                // }, false);
+
+                window?.addEventListener('keydown', handleKeyPress, false);
             }
             catch(err){
                 console.log(err);
@@ -200,7 +230,10 @@ const Home = () => {
 
         getAudioData();
 
-        return () => abortController?.abort();
+        return () => {
+            abortController?.abort();
+            document.removeEventListener('keypress', handleKeyPress);
+        }
 
     }, []);
 
@@ -307,6 +340,7 @@ const Home = () => {
             {
                 playlist.length ? 
                     <MusicPlayer 
+                        ref={player}
                         currentSong={currentSong}
                         playlist={playlist}
                         setCurrentSong={setCurrentSong}

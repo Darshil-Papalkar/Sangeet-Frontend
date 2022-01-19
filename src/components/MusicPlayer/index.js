@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
 import { Container } from "reactstrap";
 
 import PauseIcon from '@mui/icons-material/Pause';
@@ -13,7 +13,7 @@ import { apiLinks } from "../../connection.config";
 
 let timeState = null;
 
-const MusicPlayer = (props) => {
+const MusicPlayer = forwardRef((props, ref) => {
     const audioRef = useRef(null);
     const borderRef = useRef(null);
 
@@ -39,11 +39,12 @@ const MusicPlayer = (props) => {
 
     const updateBorderRef = useCallback(() => {
         setCurrentTime(audioRef.current.currentTime);
-        if(!isNaN(endTime))
+        if(endTime === Infinity || isNaN(endTime)){
             setEndTime(audioRef.current.duration);
+        }
         const percent = Math.floor(audioRef.current.currentTime / audioRef.current.duration * 100);
         // console.log(percent);
-        borderRef.current.style.width = `${percent}%`;
+        borderRef.current.style.width = `${audioRef.current.duration === Infinity ? 100 : percent}%`;
         
         timeState = setTimeout(updateBorderRef, 1000);
     }, [endTime]);
@@ -65,11 +66,24 @@ const MusicPlayer = (props) => {
 
     const nextSong = useCallback(() => {
         if(currentSongIdx < (playlist.length - 1)){
-            audioRef.current.pause();
-            // console.log('Next song', currentSongIdx, playlist, currentSong);
+            audioRef.current.pause(); 
             props.setCurrentSong(playlist[currentSongIdx + 1]);
         }
     }, [currentSongIdx, playlist, props]);
+
+    useImperativeHandle(ref, () => ({
+        handlePlayPause(){
+            playPauseSong();
+        },
+        handleNextSong(){
+            nextSong();
+        },
+        handlePrevSong(){
+            prevSong();
+        },
+        }),
+    )
+
 
     useEffect(() => {
 
@@ -82,18 +96,14 @@ const MusicPlayer = (props) => {
                 borderRef.current.style.width = "0%";
                 audioRef.current.src = await (apiLinks.getAudio + props.currentSong.musicKey);
                 const playPromise = audioRef.current.play();
+                setTimeout(() => updateBorderRef(), 100);
 
                 if (playPromise !== undefined) {
                     playPromise.then(_ => {
-                      // Automatic playback started!
-                      // Show playing UI.
                       setEndTime(audioRef.current.duration);
-                      setTimeout(() => updateBorderRef(), 100);
                       abortController = null;
                     })
                     .catch(error => {
-                      // Auto-play was prevented
-                      // Show paused UI.
                       setPlaying(false);
                     });
                 }
@@ -138,12 +148,9 @@ const MusicPlayer = (props) => {
         }
         
     }, 
-    [   props.currentSong, props.playlist, props, currentSongIdx, playlist, 
+    [   props.currentSong, props.playlist, props, currentSongIdx, playlist, ref,
         props?.currentSong?.musicTitle, currentSong?.musicTitle, nextSong, updateBorderRef
     ]);
-
-    // console.log(currentSong, playlist);
-    // console.log(currentTime, endTime);
 
     return(
         <>
@@ -208,6 +215,6 @@ const MusicPlayer = (props) => {
             <Container className="mt-3 pt-5 pb-5"/>
         </>
     );
-};
+});
 
 export default MusicPlayer;
