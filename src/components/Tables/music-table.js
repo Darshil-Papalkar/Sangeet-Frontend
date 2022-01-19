@@ -1,3 +1,4 @@
+import axios from 'axios';
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 import Paper from '@mui/material/Paper';
@@ -10,17 +11,32 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { Delete, Edit } from "@mui/icons-material";
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
+import Checkbox from '@mui/material/Checkbox';
+import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
+import Favorite from '@mui/icons-material/Favorite';
+
+import { apiLinks } from '../../connection.config';
+import { Error } from '../Notification/Notification';
 
 const columns = [
   { id: 'srno', label: "Sr. No.", minWidth: 80, align: "center" },
   { id: 'musicTitle', label: 'Music Name', minWidth: 170 },
-  { id: 'albumTitle', label: 'Album Name', minWidth: 170 },
+  { id: 'albumTitle', label: 'Album Name', minWidth: 130 },
   { id: 'artists', label: 'Artists', minWidth: 70 },
   { id: 'genre', label: 'Genre', minWidth: 70 },
   { id: 'category', label: 'Category', minWidth: 70 },
+  { id: 'show', label: 'Fav', maxWidth: 50, align: "center" },
 ];
 
 export default function StickyHeadTable(props) {
+
+  const { setRows } = props;
+
+  const label = {
+    inputProps: {
+        'aria-label': "Favourite Check"
+    }
+  };
 
   const rows = props.rows || [];
   const [page, setPage] = useState(0);
@@ -39,20 +55,45 @@ export default function StickyHeadTable(props) {
     setPage(0);
   }, [props.rows]);
 
+  const updateFavState = async (checked, id) => {
+    try{
+      const response = await axios.put(apiLinks.updateAdminMusicFav+id, {
+        state: !checked
+      }, {
+        headers: {
+          'content-type': "application/json"
+        }
+      });
+      if(response.data.code === 200){
+        const data = props.rows.filter(row => row.id === id);
+        data[0].show = !checked;
+        setRows(prev => prev.filter(row => {
+            if(row.id === id){
+              return data;
+            }
+            else{
+              return row;
+            }
+        }))
+        // Success(response.data.message);
+      }
+      else{
+        console.log("Error Occured", response.data.message);
+        // Error(response.data.message);
+      }
+    }
+    catch(err){
+      console.log(err);
+      Error(err.message);
+    }
+  };
+
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }} className="bg-fade">
       <TableContainer>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
             <TableRow>
-              {/* <TableCell
-                className="admin-table-content admin-table-heading" 
-                align="center"
-                key="id"
-                style={{minWidth: 100}}
-              >
-                Sr. No.
-              </TableCell> */}
               {columns.map((column) => (
                 <TableCell
                   className="admin-table-content admin-table-heading"
@@ -87,14 +128,6 @@ export default function StickyHeadTable(props) {
               .map((row, index) => {
                 return (
                   <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
-                    {/* <TableCell
-                      className="admin-table-content" 
-                      key={index}
-                      align="center"
-                      style={{ minWidth: 100 }}
-                    >
-                      {(rowsPerPage*page) + (index+1)}.
-                    </TableCell> */}
                     {columns.map((column, idx) => {
                       let value;
                       if(column.id !== 'srno')
@@ -111,7 +144,9 @@ export default function StickyHeadTable(props) {
                                 </div>
                               );
                             })
-                          : column.id === "srno" ? `${((rowsPerPage*page) + (index+1))}.` : value}
+                          : column.id === 'show' ? 
+                            <Checkbox checked={row[column.id]} onClick={(e) => updateFavState(row[column.id], row.id)} {...label} icon={<FavoriteBorder />} checkedIcon={<Favorite />} />
+                           : column.id === "srno" ? `${((rowsPerPage*page) + (index+1))}.` : value}
                         </TableCell>
                       );
                     })}

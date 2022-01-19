@@ -63,6 +63,7 @@ const Admin = () => {
     const [editMusicWidget, setEditMusicWidget] = useState(false);
     const [editExistingWidget, setEditExistingWidget] = useState(false);
     
+    const [fav, setFav] = useState(false);
     const [music, setMusic] = useState({});
     const [musicName, setMusicName] = useState('');
 
@@ -368,6 +369,8 @@ const Admin = () => {
     };
     
     const removeMusicDetails = () => {
+        setFav(false);
+
         setGenre([]);
         setArtist([]);
         setCategory([]);
@@ -396,6 +399,7 @@ const Admin = () => {
         formData.append("category", category);
         formData.append("genre", genre);
         formData.append("date", today);
+        formData.append("show", fav);
 
         try{
             const response = await axios.post(apiLinks.postSong, formData, {
@@ -433,6 +437,7 @@ const Admin = () => {
         const editableRow = rows.filter(entry => entry.id === id);
         // console.log(editableRow);
 
+        setFav(editableRow[0].show);
         setEditId(id);
         setGenre(editableRow[0].genre);
         setArtist(editableRow[0].artists);
@@ -445,8 +450,10 @@ const Admin = () => {
     const editArtistGenreCategory = (id, domain="") => {
 
         const editTableRow = rows.filter(entry => entry.id === id);
+        // console.log(editTableRow);
 
         if(editTableRow.length){
+            setFav(editTableRow[0].show);
             setEditId(id);
             setEditExistingWidget(prev => !prev);
             setCatGenValue(editTableRow[0].name || editTableRow[0].type);
@@ -557,22 +564,10 @@ const Admin = () => {
                     <React.Fragment />
                 }
 
-                {editExistingWidget ? 
-                    <EditExistingModal 
-                        header={header}
-                        toggle={setEditExistingWidget}
-                        setRows={setRows}
-                        rows={rows}
-                        id={modalId}
-                        editId={editId}
-                        value={catGenValue}
-                    /> :
-                    <React.Fragment />
-                }
-
                 {
                     editMusicWidget ? 
-                    <EditExistingMusic 
+                    <EditExistingMusic
+                        fav={fav}
                         genre={genre}
                         artist={artist}
                         editId={editId}
@@ -582,6 +577,7 @@ const Admin = () => {
                         albumTitle={albumTitle}
                         editMusicWidget={editMusicWidget}
 
+                        setFav={setFav}
                         updateRow={updateRow}
                         setLoader={setLoader}
                         handleChange={handleChange}
@@ -598,6 +594,7 @@ const Admin = () => {
                 {
                     addMusicWidget ? 
                     <NewMusicAdd 
+                        fav={fav}
                         genre={genre}
                         artist={artist}
                         category={category}
@@ -610,6 +607,7 @@ const Admin = () => {
                         hiddenFileInput={hiddenFileInput}
                         hiddenMusicInput={hiddenMusicInput}
 
+                        setFav={setFav}
                         uploadMusic={uploadMusic}
                         handleClick={handleClick}
                         handleChange={handleChange}
@@ -626,6 +624,22 @@ const Admin = () => {
                         handleCategoryChange={handleCategoryChange}
 
                     /> : 
+                    <React.Fragment />
+                }
+
+                {editExistingWidget ? 
+                    <EditExistingModal 
+                        fav={fav}
+                        rows={rows}
+                        id={modalId}
+                        editId={editId}
+                        header={header}
+                        value={catGenValue}
+
+                        setFav={setFav}
+                        setRows={setRows}
+                        toggle={setEditExistingWidget}
+                    /> :
                     <React.Fragment />
                 }
 
@@ -758,6 +772,7 @@ const Admin = () => {
                                         <StickyHeadTable 
                                             id="table"
                                             rows = {rows}
+                                            setRows={setRows}
                                             editRow={editRow}
                                             toggleWarning={toggleWarning}
                                         />
@@ -769,6 +784,7 @@ const Admin = () => {
                                     <Col>
                                         <ArtistsTable 
                                             rows = {rows}
+                                            setRows={setRows}
                                             toggleWarning={toggleWarning}
                                             editArtist={editArtistGenreCategory}
                                         />
@@ -780,6 +796,7 @@ const Admin = () => {
                                     <Col>
                                         <GenreTable 
                                             rows = {rows}
+                                            setRows={setRows}
                                             toggleWarning={toggleWarning}
                                             editGenre={editArtistGenreCategory}
                                         /> 
@@ -791,6 +808,7 @@ const Admin = () => {
                                     <Col>
                                         <CategoryTable 
                                             rows = {rows}
+                                            setRows={setRows}
                                             toggleWarning={toggleWarning}
                                             editCategory={editArtistGenreCategory}
                                         />

@@ -15,7 +15,15 @@ const musicList = {};
 const reducer = (state, action) => {
     switch(action.type){
         case 'FETCH_SUCCESS':
-            const term = action.message;
+            const artistData = action.artistData.filter(item => item.show === true);
+            const genreData = action.genreData.filter(item => item.show === true);
+            const categoryData = action.categoryData.filter(item => item.show === true);
+            const term = action.message.filter(item => item.show === true);
+            
+            // console.log(term);
+            // console.log(artistData);
+            // console.log(genreData);
+            // console.log(categoryData);
 
             let genreList = {};
             let artistList = {};
@@ -29,11 +37,13 @@ const reducer = (state, action) => {
                 let list = term[i].genre;
                 for(var j=0; j < list.length; j++){
                     const data = list[j];
-                    if(genreList[data] === undefined){
-                        genreList[data] = [term[i]];
-                    }
-                    else{
-                        genreList[data].push(term[i]);
+                    if(genreData.find(genre => genre.type === data)){
+                        if(genreList[data] === undefined){
+                            genreList[data] = [term[i]];
+                        }
+                        else{
+                            genreList[data].push(term[i]);
+                        }
                     }
                 }
 
@@ -50,11 +60,13 @@ const reducer = (state, action) => {
                 list = term[i].artists;
                 for(j=0; j < list.length; j++){
                     const data = list[j];
-                    if(artistList[data] === undefined){
-                        artistList[data] = [term[i]];
-                    }
-                    else{
-                        artistList[data].push(term[i]);
+                    if(artistData.find(artist => artist.name === data)){
+                        if(artistList[data] === undefined){
+                            artistList[data] = [term[i]];
+                        }
+                        else{
+                            artistList[data].push(term[i]);
+                        }
                     }
                 }
 
@@ -62,11 +74,13 @@ const reducer = (state, action) => {
                 list = term[i].category;
                 for(j=0; j < list.length; j++){
                     const data = list[j];
-                    if(categoryList[data] === undefined){
-                        categoryList[data] = [term[i]];
-                    }
-                    else{
-                        categoryList[data].push(term[i]);
+                    if(categoryData.find(category => category.type === data)){
+                        if(categoryList[data] === undefined){
+                            categoryList[data] = [term[i]];
+                        }
+                        else{
+                            categoryList[data].push(term[i]);
+                        }
                     }
                 }
             }
@@ -78,6 +92,8 @@ const reducer = (state, action) => {
                 categoryList,
                 musicList
             };
+
+            // console.log(list);
 
             return list;
 
@@ -209,16 +225,16 @@ const Home = () => {
                     signal: abortController.signal
                 });
                 if(response.data.code === 200){
-                    dispatch({ type: 'FETCH_SUCCESS', message: response.data.message });
+                    dispatch({  type: 'FETCH_SUCCESS', 
+                                message: response.data.message,
+                                artistData: response.data.artistData,
+                                genreData: response.data.genreData,
+                                categoryData: response.data.categoryData
+                            });
                 }
                 else{
                     dispatch({ type: 'FETCH_ERROR', message: response.data.message });
                 }
-                
-                // window?.addEventListener('keydown', function(e){
-                //     if(["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].indexOf(e.code) > -1)
-                //         console.log(e);
-                // }, false);
 
                 window?.addEventListener('keydown', handleKeyPress, false);
             }

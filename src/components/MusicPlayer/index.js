@@ -33,39 +33,42 @@ const MusicPlayer = forwardRef((props, ref) => {
             const minutes = Math.floor(time / 60);
             const seconds = Math.floor(time % 60);
             return `${minutes < 10 ? '0' + String(minutes) : String(minutes)}:${seconds < 10 ? '0' + String(seconds) : String(seconds)}`;
-        }
+        } 
         return time;
     };
 
     const updateBorderRef = useCallback(() => {
         setCurrentTime(audioRef.current.currentTime);
-        if(endTime === Infinity || isNaN(endTime)){
-            setEndTime(audioRef.current.duration);
-        }
+        setEndTime(audioRef.current.duration);
         const percent = Math.floor(audioRef.current.currentTime / audioRef.current.duration * 100);
         // console.log(percent);
         borderRef.current.style.width = `${audioRef.current.duration === Infinity ? 100 : percent}%`;
         
         timeState = setTimeout(updateBorderRef, 1000);
-    }, [endTime]);
+    }, []);
 
     const playPauseSong = () => {
         if(playing){
+            window.clearTimeout(timeState);
             audioRef.current.pause();
         }
         else{
             audioRef.current.play();
+            timeState = setTimeout(updateBorderRef, 1000);
         }
         setPlaying(prev => !prev);
     };
 
     const prevSong = useCallback(() => {
-        if(currentSongIdx > 0)
+        if(currentSongIdx > 0){
+            window.clearTimeout(timeState);
             props.setCurrentSong(playlist[currentSongIdx - 1]);
+        }
     }, [props, currentSongIdx, playlist]);
 
     const nextSong = useCallback(() => {
         if(currentSongIdx < (playlist.length - 1)){
+            window.clearTimeout(timeState);
             audioRef.current.pause(); 
             props.setCurrentSong(playlist[currentSongIdx + 1]);
         }
@@ -96,7 +99,7 @@ const MusicPlayer = forwardRef((props, ref) => {
                 borderRef.current.style.width = "0%";
                 audioRef.current.src = await (apiLinks.getAudio + props.currentSong.musicKey);
                 const playPromise = audioRef.current.play();
-                setTimeout(() => updateBorderRef(), 100);
+                timeState = setTimeout(() => updateBorderRef(), 100);
 
                 if (playPromise !== undefined) {
                     playPromise.then(_ => {

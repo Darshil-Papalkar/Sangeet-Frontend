@@ -27,7 +27,7 @@ const NewMusicAdd = (props) => {
     const [categoryList, setCategoryList] = useState([]);
 
     const {genre, category, musicName, artist, musicImgPath, musicImgName, addMusicWidget, hiddenFileInput,
-        hiddenMusicInput, uploadMusic, handleClick, handleChange, saveUploadMusic, handleMusicClick,
+        hiddenMusicInput, uploadMusic, handleClick, handleChange, saveUploadMusic, handleMusicClick, fav, setFav,
         uploadMusicImage, handleGenreChange, removeMusicDetails, removeSelectedSong, removeSelectedImage,
         updateAddMusicWidget, handleCategoryChange, musicTitle, albumTitle, setMusicTitle, setAlbumTitle} = props;
 
@@ -142,8 +142,11 @@ const NewMusicAdd = (props) => {
                                     id="song-name"
                                     labelName="Song Name"
                                     label="Enter Song Name"
+                                    check={true}
                                     value={musicTitle}
                                     onChange={setMusicTitle}
+                                    checkedValue={fav}
+                                    onCheckBoxChange={setFav}
                                 />
                                 <TextInput 
                                     id="album-name"

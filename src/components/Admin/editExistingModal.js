@@ -10,7 +10,7 @@ import { Error, Success } from '../Notification/Notification';
 
 const EditExistingModal = (props) => {
 
-    const { editId } = props;
+    const { editId, fav, setFav } = props;
 
     const [loader, setLoader] = useState(false);
     const [name, setName] = useState(props.value || '');
@@ -21,7 +21,8 @@ const EditExistingModal = (props) => {
         const data = {
             id: props.editId,
             type: name,
-            name: name
+            name: name,
+            show: fav
         };
         const editedRow = props.rows.filter(item => item.id !== props.editId);
         props.setRows([data, ...editedRow]);
@@ -35,8 +36,10 @@ const EditExistingModal = (props) => {
             
             const formData = {
                 'type': names,
-                'name': names
+                'name': names,
+                'show': fav
             };
+
             let response = {};
 
             if(props.id === '1'){
@@ -158,6 +161,9 @@ const EditExistingModal = (props) => {
                         label={props.id === '1' ? "Enter Artist Name" : "Enter Type"}
                         value={name}
                         onChange={setName}
+                        // check={true}
+                        checkedValue={fav}
+                        onCheckBoxChange={setFav}
                     />
                 </ModalBody>
                 <ModalFooter>

@@ -13,12 +13,15 @@ const AddNewModal = (props) => {
     const hiddenFileInput = useRef(null);
 
     const [loader, setLoader] = useState(false);
+
     const [name, setName] = useState('');
+    const [checkBoxChecked, setCheckBoxChecked] = useState(false);
+
     const [artistImg, setArtistImg] = useState({});
     const [artistImgName, setArtistImgName] = useState('');
     const [artistImgPath, setArtistPath] = useState('/assets/images/artist-design.png');
   
-    const handleClick = (event) => {
+    const handleClick = () => {
         hiddenFileInput.current.click();
     };
         
@@ -70,6 +73,7 @@ const AddNewModal = (props) => {
             
             const formData = new FormData();
             formData.append('names', names);
+            formData.append("show", checkBoxChecked);
             let response = {};
 
             if(props.id === '1'){
@@ -80,7 +84,8 @@ const AddNewModal = (props) => {
             }
             else if(props.id === '2'){
                 response = await axios.post(apiLinks.addGenre, {
-                    types: names
+                    types: names,
+                    show: checkBoxChecked,
                 }, {
                     signal: controller.signal,
                     headers: {
@@ -90,7 +95,8 @@ const AddNewModal = (props) => {
             }
             else{
                 response = await axios.post(apiLinks.addCategory, {
-                    types: names
+                    types: names,
+                    show: checkBoxChecked,
                 }, {
                     signal: controller.signal,
                     headers: {
@@ -128,6 +134,7 @@ const AddNewModal = (props) => {
 
     const removeDetail = () => {
         setName('');
+        setCheckBoxChecked(false);
         removeSelectedImage();
     };
 
@@ -167,10 +174,13 @@ const AddNewModal = (props) => {
                     <TextInput 
                         id={props.id}
                         required
+                        check={true}
                         labelName={props.id === '1' ? "Add New Name" : "Add New Type"}
                         label={props.id === '1' ? "Enter Artist Name" : "Enter Comma separated Types"}
                         value={name}
                         onChange={setName}
+                        checkedValue={checkBoxChecked}
+                        onCheckBoxChange={setCheckBoxChecked}
                     />
                 </ModalBody>
                 <ModalFooter>

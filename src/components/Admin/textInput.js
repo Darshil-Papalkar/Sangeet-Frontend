@@ -1,12 +1,25 @@
 import React from 'react';
 import { Row, Col, Label } from 'reactstrap';
 import { TextField } from '@mui/material'
+import Checkbox from '@mui/material/Checkbox';
+import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
+import Favorite from '@mui/icons-material/Favorite';
 
 const TextInput = (props) => {
 
+    const label = {
+        inputProps: {
+            'aria-label': "Favourite Check"
+        }
+    };
+
+    const onCheckedChange = (event) => {
+        props.onCheckBoxChange(event.target.checked);
+    };
+
     const onValueChange = (event) => {
         props.onChange(event.target.value);
-    }
+    };
 
     return (
         <Row className='music-detail-fields'>
@@ -21,7 +34,7 @@ const TextInput = (props) => {
                     }
                 </Label>
             </Col>
-            <Col className="mt-1 mb-1" xs="7">
+            <Col className="mt-1 mb-1" xs={props.check ? "6" : "7"}>
                 <TextField 
                     value={props.value}
                     onChange={onValueChange}
@@ -31,6 +44,13 @@ const TextInput = (props) => {
                     variant="standard"
                 />
             </Col>
+            {
+                props.check ?
+                <Col className='mt-1 mb-1' xs="1">
+                    <Checkbox onChange={onCheckedChange} checked={props.checkedValue} {...label} icon={<FavoriteBorder />} checkedIcon={<Favorite />} />
+                </Col> :
+                <React.Fragment />
+            }
         </Row>
     );
 };

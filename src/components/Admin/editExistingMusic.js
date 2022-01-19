@@ -44,7 +44,7 @@ const EditExistingMusic = (props) => {
     const [musicImgKey, setMusicImgKey] = useState("");
 
     const {genre, category, artist, musicTitle, albumTitle, editMusicWidget, editId,
-            handleChange,  setMusicTitle, setLoader, updateRow,
+            handleChange,  setMusicTitle, setLoader, updateRow, fav, setFav,
             setAlbumTitle, handleGenreChange, handleCategoryChange, 
             updateEditMusicWidget } = props;
 
@@ -143,6 +143,7 @@ const EditExistingMusic = (props) => {
                 "genre": JSON.stringify(genre),
                 "category": JSON.stringify(category),
                 "date": today,
+                "show": fav
             };
 
             const response = await axios.put(apiLinks.updateAdminData+editId, formData, {
@@ -365,6 +366,9 @@ const EditExistingMusic = (props) => {
                                     label="Enter Song Name"
                                     value={musicTitle}
                                     onChange={setMusicTitle}
+                                    // check={true}
+                                    checkedValue={fav}
+                                    onCheckBoxChange={setFav}
                                 />
                                 <TextInput 
                                     id="album-name"
