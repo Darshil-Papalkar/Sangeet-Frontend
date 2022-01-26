@@ -9,7 +9,7 @@
 .custom-bottom-navigation{
     display: flex;
     align-items: center;
-    justify-content: space-around;
+    justify-content: space-between;
     align-content: center;
     flex-wrap: nowrap;
     flex-direction: row;
@@ -58,6 +58,7 @@
 .navbarHead-img{
     width: 100%;
     height: 100%;
+    transform: scale(1.2);
 }
 
 @keyframes rotate{
@@ -69,34 +70,23 @@
     }
 }
 
-.music-detail-box{
+/* .music-detail-box{
     width: 200px;
-}
+} */
 
-@media screen and (max-width: 768px) {
-
-    .music-detail-box{
-        width: 150px;
-    }
-}
-
-@media screen and (max-width: 524px){
-    .custom-bottom-navigation{
-        justify-content: space-between;
-    }
-
-    .music-detail-box{
-        width: 100px;
-    }
-}
-
-.music-detail-box>*{
+.music-detail-box>*,
+.music-album>a{
     color: rgb(64, 226, 0);
     margin: auto;
-    
+    text-decoration: none;    
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.music-album>a:hover{
+    text-decoration: underline;
+    color:rgb(64, 226, 0)
 }
 
 .custom-button-group-container{
@@ -122,6 +112,71 @@
     cursor: pointer;
 }
 
+.custom-button-group .volume-svg{
+    font-size: 2rem !important;
+    cursor: pointer;
+    margin-left: 1rem;
+}
+
 .disabled-svg{
     color: rgb(84 84 84);
+}
+
+.volume-range-slider{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+}
+
+input[type=range][orient=vertical].volume-slider{
+    writing-mode: vertical-lr; /* IE */
+    -webkit-appearance: slider-vertical; /* WebKit */
+    width: 8px;
+    height: 100px;
+    padding: 0 5px;
+    position: absolute;
+    top: -55px;
+    margin-left: 1rem;
+}
+
+@media screen and (max-width: 524px){
+    /* .custom-bottom-navigation{
+        justify-content: space-around;
+        gap: 0;
+    } */
+    
+    .musicDetails{
+        gap: 10px;
+    }
+
+    .music-detail-box{
+        /* width: 100px; */
+    }
+    
+    .custom-button-group>svg{
+        font-size: 1.8rem !important;
+    }
+
+    .custom-button-group .volume-svg{
+        font-size: 1.4rem !important;
+        margin-left: .5rem;
+    }
+
+    input[type=range][orient=vertical].volume-slider{
+        margin-left: .5rem;
+    }
+}
+
+@media screen and (max-width: 410px) {
+
+    .custom-bottom-navigation{
+        gap: 0;
+    }
+
+    .music-detail-box{
+        width: 100px;
+    }
 }

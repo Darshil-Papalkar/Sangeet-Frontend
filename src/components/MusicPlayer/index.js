@@ -1,29 +1,44 @@
-import React, { useState, useRef, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
+import React, { useState, useRef, useEffect, useCallback, 
+        forwardRef, useImperativeHandle, useContext } from "react";
 import { Container } from "reactstrap";
-
+import { Link } from "react-router-dom";
 import PauseIcon from '@mui/icons-material/Pause';
 import { Error } from '../Notification/Notification';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
 import { SpinnerRotate } from "../spinner/spinner-grow";
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
+import VolumeUpIcon from '@mui/icons-material/VolumeUp';
+import VolumeOffIcon from '@mui/icons-material/VolumeOff';
+import VolumeDownIcon from '@mui/icons-material/VolumeDown';
+
+import { LoadAudio } from "../../App";
+import { apiLinks } from "../../connection.config";
+
 
 import "./index.css";
-import { apiLinks } from "../../connection.config";
 
 let timeState = null;
 
 const MusicPlayer = forwardRef((props, ref) => {
     const audioRef = useRef(null);
     const borderRef = useRef(null);
+    const volumeRef = useRef(null);
 
-    const [playing, setPlaying] = useState(false);
+    const loadAudio = useContext(LoadAudio);
+
+    const { playing, setPlaying } = props;
+
+    const [style, setStyle] = useState({display: 'none'});
+
+    // const [playing, setPlaying] = useState(false);
     const [loading, setLoading] = useState(false);
 
     const [playlist, setPlaylist] = useState([]);
     const [currentSong, setCurrentSong] = useState({});
     const [currentSongIdx, setCurrentSongIdx] = useState(0);
 
+    const [volume, setVolume] = useState(1.0);
     const [currentTime, setCurrentTime] = useState(0);
     const [endTime, setEndTime] = useState(0);
 
@@ -39,13 +54,11 @@ const MusicPlayer = forwardRef((props, ref) => {
 
     const updateBorderRef = useCallback(() => {
         setCurrentTime(audioRef.current.currentTime);
-        setEndTime(audioRef.current.duration);
-        const percent = Math.floor(audioRef.current.currentTime / audioRef.current.duration * 100);
-        // console.log(percent);
-        borderRef.current.style.width = `${audioRef.current.duration === Infinity ? 100 : percent}%`;
+        const percent = (audioRef.current.currentTime / endTime * 100);
+        borderRef.current.style.width = `${endTime === null ? 100 : percent}%`;
         
-        timeState = setTimeout(updateBorderRef, 1000);
-    }, []);
+        timeState = setTimeout(updateBorderRef, 2000);
+    }, [endTime]);
 
     const playPauseSong = () => {
         if(playing){
@@ -74,6 +87,29 @@ const MusicPlayer = forwardRef((props, ref) => {
         }
     }, [currentSongIdx, playlist, props]);
 
+    const volumeInc = () => {
+        if(volume < 1){
+            const vol = parseFloat(volume.toFixed(1)) + 0.1;
+            volumeRef.current.value = vol;
+            audioRef.current.volume = vol;
+            setVolume(vol);
+        }
+    };
+
+    const volumeDec = () => {
+        if(volume > 0){
+            const vol = parseFloat(volume.toFixed(1)) - 0.1;
+            volumeRef.current.value = vol;
+            audioRef.current.volume = vol;
+            setVolume(vol);
+        }
+    };
+
+    const handleMute = (vol) => {
+        setVolume(vol);
+        audioRef.current.volume = vol;
+    };
+
     useImperativeHandle(ref, () => ({
         handlePlayPause(){
             playPauseSong();
@@ -84,9 +120,14 @@ const MusicPlayer = forwardRef((props, ref) => {
         handlePrevSong(){
             prevSong();
         },
+        handleVolumeInc(){
+            volumeInc();
+        },
+        handleVolumeDec(){
+            volumeDec();
+        },
         }),
     )
-
 
     useEffect(() => {
 
@@ -95,15 +136,21 @@ const MusicPlayer = forwardRef((props, ref) => {
         const loadMusic = async () => {
             try{
                 setLoading(true);
-                setEndTime(0);
-                borderRef.current.style.width = "0%";
+                // setEndTime(0);
+                // borderRef.current.style.width = "0%";
                 audioRef.current.src = await (apiLinks.getAudio + props.currentSong.musicKey);
                 const playPromise = audioRef.current.play();
+                audioRef.current.volume = volume;
                 timeState = setTimeout(() => updateBorderRef(), 100);
+
+                // audioRef.current.addEventListener('loadedmetadata', () => {
+                //     setEndTime(audioRef.current.duration);
+                // })
+                setEndTime(props.currentSong.duration);
 
                 if (playPromise !== undefined) {
                     playPromise.then(_ => {
-                      setEndTime(audioRef.current.duration);
+                    //   setEndTime(audioRef.current.duration);
                       abortController = null;
                     })
                     .catch(error => {
@@ -117,10 +164,10 @@ const MusicPlayer = forwardRef((props, ref) => {
                 audioRef.current.onended = () => {
                     clearTimeout(timeState);
                     if(currentSongIndex < props.playlist?.length - 1){
-                        props.loadAudio(props.playlist, props.playlist[currentSongIndex + 1], null);
+                        loadAudio(props.playlist, props.playlist[currentSongIndex + 1], null);
                     }
                     else{
-                        props.loadAudio([], {}, null);
+                        loadAudio([], {}, null);
                     }
                     setPlaying(false);
                 };
@@ -151,9 +198,11 @@ const MusicPlayer = forwardRef((props, ref) => {
         }
         
     }, 
-    [   props.currentSong, props.playlist, props, currentSongIdx, playlist, ref,
-        props?.currentSong?.musicTitle, currentSong?.musicTitle, nextSong, updateBorderRef
+    [   props.currentSong, props.playlist, props, currentSongIdx, playlist, ref, volume, setPlaying, 
+        props?.currentSong?.musicTitle, currentSong?.musicTitle, nextSong, updateBorderRef, loadAudio
     ]);
+
+    // console.log(currentSong);
 
     return(
         <>
@@ -180,7 +229,9 @@ const MusicPlayer = forwardRef((props, ref) => {
                                 {currentSong.musicTitle}
                             </h5>
                             <h6 className="music-album">
-                                {currentSong.albumTitle}
+                                <Link to={`/album/${currentSong.albumTitle}`}>
+                                    {currentSong.albumTitle}
+                                </Link>
                             </h6>
                         </div>
                     </div>
@@ -210,6 +261,27 @@ const MusicPlayer = forwardRef((props, ref) => {
                                         currentSongIdx < (playlist.length - 1) ? 
                                             { cursor: 'pointer'} : { cursor: 'not-allowed' }} 
                             />
+                            <span 
+                                className="volume-range-slider"
+
+                                onClick={e => {
+                                    setStyle(prev => {
+                                        return {
+                                            display: prev.display === 'block' ? 'none' : 'block'
+                                        }
+                                    })
+                                }}
+                            >
+                                {
+                                    volume > 0.5 ?
+                                        <VolumeUpIcon className="volume-svg" /> :
+                                        volume > 0 ?
+                                            <VolumeDownIcon className="volume-svg" /> :
+                                            <VolumeOffIcon className="volume-svg" />
+                                }
+                                <input style={style} min={0} max={1} step={0.1} onChange={e => handleMute(parseFloat(e.target.value))}
+                                    type="range" orient="vertical" className="volume-slider" ref={volumeRef} defaultValue={volume} />
+                            </span>
                         </div>
                         <audio ref={audioRef} preload="auto" />
                     </div>

@@ -12,20 +12,24 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import CategoryIcon from '@mui/icons-material/Category';
 import DomainIcon from '@mui/icons-material/Domain';
+import CellTowerIcon from '@mui/icons-material/CellTower';
 
-import AddNewModal from './addNewModal';
-import NewMusicAdd from './newMusicAdd';
-import StickyHeadTable from "../Tables/music-table";
-import GenreTable from '../Tables/Genre-table';
-import ArtistsTable from '../Tables/artists-table';
-import CategoryTable from '../Tables/category-table';
-import SpinnerGrow from "../spinner/spinner-grow";
-import EditExistingMusic from './editExistingMusic';
-import { DeleteWarning } from '../Warning/Warning';
-import { apiLinks } from '../../connection.config';
-import EditExistingModal from './editExistingModal';
-import { Success, Error } from '../Notification/Notification';
-import AdminNavigation from '../navigation/Navigation-bar/admin-navigation';
+import AddNewModal from '../components/Admin/addNewModal';
+import NewMusicAdd from '../components/Admin/newMusicAdd';
+import * as serviceWorker from "../client/index";
+
+import GenreTable from '../components/Tables/Genre-table';
+import ArtistsTable from '../components/Tables/artists-table';
+import StickyHeadTable from "../components/Tables/music-table";
+import CategoryTable from '../components/Tables/category-table';
+
+import SpinnerGrow from "../components/spinner/spinner-grow";
+import EditExistingMusic from '../components/Admin/editExistingMusic';
+import { DeleteWarning } from '../components/Warning/Warning';
+import { apiLinks } from '../connection.config';
+import EditExistingModal from '../components/Admin/editExistingModal';
+import { Success, Error } from '../components/Notification/Notification';
+import AdminNavigation from '../components/navigation/Navigation-bar/admin-navigation';
 
 
 import "./admin.css";
@@ -35,6 +39,7 @@ let genreRows = [], artistRows = [], categoryRows = [], musicRows = [];
 const Admin = () => {
     const hiddenFileInput = useRef(null);
     const hiddenMusicInput = useRef(null);
+    const audioDurationRef = useRef(null);
 
     const [open, setOpen] = useState(false);
 
@@ -66,6 +71,7 @@ const Admin = () => {
     const [fav, setFav] = useState(false);
     const [music, setMusic] = useState({});
     const [musicName, setMusicName] = useState('');
+    const [musicDuration, setMusicDuration] = useState(0);
 
     const [musicTitle, setMusicTitle] = useState('');
     const [albumTitle, setAlbumTitle] = useState('');
@@ -352,6 +358,18 @@ const Admin = () => {
     
     const uploadMusic = (event) => {
         if(event.target.files[0]){
+            window.URL = window.URL || window.webkitURL;
+            audioDurationRef.current = document.createElement("audio");
+            audioDurationRef.current.preload = 'metadata';
+
+            audioDurationRef.current.onloadedmetadata = () => {
+                window.URL.revokeObjectURL(audioDurationRef.current.src);
+                const duration = Math.floor(audioDurationRef.current.duration);
+                setMusicDuration(duration);
+            };
+
+            audioDurationRef.current.src = URL.createObjectURL(event.target.files[0]);
+
             setMusic(event.target.files);
             setMusicName(event.target.files[0].name);
         }
@@ -360,6 +378,9 @@ const Admin = () => {
     const removeSelectedSong = () => {
         setMusic({});
         setMusicName("");
+        audioDurationRef?.current?.remove();
+        audioDurationRef.current = null;
+        setMusicDuration(0);
     };
     
     const removeSelectedImage = () => {
@@ -375,15 +396,12 @@ const Admin = () => {
         setArtist([]);
         setCategory([]);
 
-        setMusic({});
-        setMusicName("");
+        removeSelectedSong();
         
         setMusicTitle("");
         setAlbumTitle("");
 
-        setMusicImg({});
-        setMusicImgName("");
-        setMusicImgPath("/assets/images/default-music-upload-image.png");
+        removeSelectedImage();
     };
 
     const saveUploadMusic = async () => {
@@ -400,6 +418,7 @@ const Admin = () => {
         formData.append("genre", genre);
         formData.append("date", today);
         formData.append("show", fav);
+        formData.append("duration", musicDuration);
 
         try{
             const response = await axios.post(apiLinks.postSong, formData, {
@@ -538,12 +557,17 @@ const Admin = () => {
             toggleWarning();
         }
     };
+
+    const broadCast = () => {
+        serviceWorker.Broadcast();
+    };
     
     const actions = [
         { icon: <MusicNoteIcon />, name: 'Add Song', click: updateAddMusicWidget },
         { icon: <PersonAddIcon />, name: 'Add Artist', click: updateAddArtistWidget },
         { icon: <DomainIcon />, name: 'Add Genre', click: updateAddGenreWidget },
         { icon: <CategoryIcon />, name: 'Add Category', click: updateAddCategoryWidget },
+        { icon: <CellTowerIcon />, name: "BroadCast", click: broadCast }, 
     ];
 
     return (
@@ -603,6 +627,7 @@ const Admin = () => {
                         albumTitle={albumTitle}
                         musicImgPath={musicImgPath}
                         musicImgName={musicImgName}
+                        musicDuration={musicDuration}
                         addMusicWidget={addMusicWidget}
                         hiddenFileInput={hiddenFileInput}
                         hiddenMusicInput={hiddenMusicInput}
@@ -760,7 +785,7 @@ const Admin = () => {
                                                                 tabId === 3 ? "Search Genre" : 
                                                                 "Search Category"} 
                                     className="input-div" variant="standard" 
-                                    onChange={getSearchedRow} onFocus={getSearchedRow}
+                                    onChange={getSearchedRow}
                                     />
                                 )}
                             />

@@ -1,12 +1,14 @@
 import axios from "axios";
 import Slider from "react-slick";
 import { Container } from 'reactstrap';
-import React, { useEffect, useReducer, useRef, useState } from "react";
+import { Link } from "react-router-dom";
+import React, { useEffect, useReducer, useState, useContext } from "react";
 
-import { Error } from "./Notification/Notification";
-import MusicPlayer from "./MusicPlayer";
+import { LoadAudio } from "../App";
 import { apiLinks } from '../connection.config';
-import Navigation from "./navigation/Navigation-bar/navigation";
+import SpinnerGrow from "../components/spinner/spinner-grow";
+import { Error } from "../components/Notification/Notification";
+import Navigation from "../components/navigation/Navigation-bar/navigation";
 
 import "./Home.css";
 
@@ -112,56 +114,35 @@ const settings = {
     lazyLoad: "ondemand",
     infinite: false,
     speed: 500,
-    slidesToShow: 5,
+    slidesToShow: 8,
     slidesToScroll: 1,
     swipeToSlide: true,
     easing: "linear",
     responsive: [
         {
-          breakpoint: 1024,
-          settings: {
-            slidesToShow: 4,
-          }
-        },
-        {
-          breakpoint: 600,
-          settings: {
-            slidesToShow: 3
-          }
-        },
-        {
-          breakpoint: 480,
-          settings: {
-            slidesToShow: 2
-          }
-        },
-        {
-            breakpoint: 320,
-            setting: {
-                slidesToShow: 1
+            breakpoint: 1500,
+            settings: {
+              slidesToShow: 7,
             }
-        }
-    ]
-};
-
-const artistSettings = {
-    dots: false,
-    arrows: false,
-    draggable: true,
-    lazyLoad: "ondemand",
-    infinite: false,
-    speed: 500,
-    slidesToShow: 5,
-    slidesToScroll: 1,
-    swipeToSlide: true,
-    easing: "linear",
-    responsive: [
+        },
+        {
+            breakpoint: 1350,
+            settings: {
+              slidesToShow: 6,
+            }
+        },
         {
           breakpoint: 1024,
           settings: {
-            slidesToShow: 4,
+            slidesToShow: 5,
           }
         },
+        {
+            breakpoint: 850,
+            settings: {
+              slidesToShow: 4,
+            }
+          },
         {
           breakpoint: 600,
           settings: {
@@ -173,54 +154,30 @@ const artistSettings = {
           settings: {
             slidesToShow: 2
           }
-        }
+        },
+        {
+            breakpoint: 300,
+            settings: {
+              slidesToShow: 1
+            }
+        },
     ]
 };
 
-const Home = () => {
-    const player = useRef(null);
+const Home = (props) => {
+    const loadAudio = useContext(LoadAudio);
+
+    const [loader, setLoader] = useState(false);
 
     const [list, dispatch] = useReducer(reducer, musicList);
-    const [playlist, setPlaylist] = useState([]);
-    const [currentSong, setCurrentSong] = useState({});
-
-    const loadAudio = (ll, item, e) => {
-        if(e)
-            e.preventDefault();
-        setPlaylist(ll);
-        setCurrentSong(item);
-        // console.log(ll, item);
-    };
-
-    // console.log(currentSong, playlist);
-        
-    const handleKeyPress = (e) => {
-        switch(e.code){
-            case 'Space':  
-                e.preventDefault();
-                if(player.current)
-                    player?.current?.handlePlayPause();
-                break;
-            case 'ArrowLeft':
-                e.preventDefault();
-                if(player.current)
-                    player?.current?.handlePrevSong();
-                break;
-            case 'ArrowRight':
-                e.preventDefault();
-                if(player.current)
-                    player?.current?.handleNextSong();
-                break;
-            default:
-                break;
-        }
-    };
 
     useEffect(() => {
+
         let abortController = new AbortController();
 
         const getAudioData = async() => {
             try{
+                setLoader(true);
                 const response = await axios.get(apiLinks.getAllAudioDetails, {
                     signal: abortController.signal
                 });
@@ -235,12 +192,13 @@ const Home = () => {
                 else{
                     dispatch({ type: 'FETCH_ERROR', message: response.data.message });
                 }
-
-                window?.addEventListener('keydown', handleKeyPress, false);
             }
             catch(err){
                 console.log(err);
                 dispatch({ type: 'FETCH_ERROR', message: err.message });
+            }
+            finally{
+                setLoader(false);
             }
         };
 
@@ -248,13 +206,16 @@ const Home = () => {
 
         return () => {
             abortController?.abort();
-            document.removeEventListener('keypress', handleKeyPress);
         }
 
     }, []);
 
     return (
         <div className="App">
+            {loader ? 
+                <SpinnerGrow color="success" />: 
+                <React.Fragment />
+            }
             <Navigation />
             <Container key='category-container' fluid>
                 {list.categoryList ?  
@@ -272,7 +233,7 @@ const Home = () => {
                             ll = list.categoryList[catList];
 
                         return (
-                            <Container key={catList} fluid className=" mt-3 slider-container">
+                            <Container key={catList} className=" mt-3 slider-container" fluid>
                                 <h2 className="category-list-heading" title={catList}>{catList}</h2>
                                 <Slider {...settings}>
                                     {ll.map(item => {
@@ -287,20 +248,24 @@ const Home = () => {
                                                 </div>
                                                 <div className="card-text-container">
                                                     <div className="card-text">
-                                                        <h5 className="pt-3" title={`Play ${item.musicTitle}`}>
+                                                        <h5 className="pt-3 song-name" title={`Play ${item.musicTitle}`}>
                                                             <span style={{cursor: "pointer"}} onClick={(e) => loadAudio(ll, item, e)}>
                                                                 {item.musicTitle}
                                                             </span>
                                                         </h5>
-                                                        <h6 style={{cursor: "pointer"}} className="album-title" title={`Listen ${item.albumTitle}`}>
-                                                            {item.albumTitle}
+                                                        <h6 title={`Watch ${item.albumTitle}`} className="album-title">
+                                                            <Link to={`/album/${item.albumTitle}`} className="album-title">
+                                                                {item.albumTitle}
+                                                            </Link>
                                                         </h6>
-                                                        <h6>
+                                                        {/* <h6 className="artist-name">
                                                             {item.artists.map((artist, idx) => {
                                                                 return (
                                                                     <React.Fragment>
-                                                                        <span style={{cursor: "pointer"}} title={`Listen to ${artist}`} className="artist-name" key={artist}>
-                                                                            {artist}
+                                                                        <span title={`Listen to ${artist}`}  key={artist}>
+                                                                            <Link to={`/artist/${artist}`} className="artist-name">
+                                                                                {artist}
+                                                                            </Link>
                                                                         </span>
                                                                         <span key={idx}>
                                                                             {item.artists?.length - 1 > idx ? `, ` : ``}
@@ -309,8 +274,7 @@ const Home = () => {
 
                                                                 )
                                                             })}
-                                                            {/* {item.artists.join(', ')} */}
-                                                        </h6>
+                                                        </h6> */}
                                                     </div>
                                                 </div>
                                             </div>
@@ -327,7 +291,7 @@ const Home = () => {
                 { list.artistList ? 
                     <Container className="slider-container" fluid>
                         <h2 className="category-list-heading" title="Artists">Artists</h2>
-                        <Slider {...artistSettings}>
+                        <Slider {...settings}>
                         { Object.keys(list.artistList).map((artist, id) => {
                             return (
                                 <div key={id} className="mt-3 mb-3 custom-card-items">
@@ -340,8 +304,10 @@ const Home = () => {
                                     </div>
                                     <div className="card-text-container">
                                         <div className="card-text" style={{textAlign: "center"}}>
-                                            <h4 className="pt-3" title={artist}>
-                                                {artist}
+                                            <h4 className="pt-3 pb-3 artist-name" title={artist}>
+                                                <Link to={`/artist/${artist}`} className="artist-name">
+                                                    {artist}
+                                                </Link>
                                             </h4>
                                         </div>
                                     </div>
@@ -352,18 +318,7 @@ const Home = () => {
                     </Container>
                  : <React.Fragment /> }
             </Container>
-            <Container className="pt-3" />
-            {
-                playlist.length ? 
-                    <MusicPlayer 
-                        ref={player}
-                        currentSong={currentSong}
-                        playlist={playlist}
-                        setCurrentSong={setCurrentSong}
-                        loadAudio={loadAudio}
-                    />
-                    : <React.Fragment />
-            }
+            <Container className="pt-3 mt-5" fluid />
         </div>
     );
 };

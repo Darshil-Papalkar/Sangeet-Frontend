@@ -14,6 +14,7 @@
     font-size: 1.75rem;
     color: rgb(64, 226, 0);
     padding-left: 15px;
+    cursor: pointer;
 }
 
 .navbar-toggler{
@@ -30,6 +31,7 @@
 }
 
 .navbar-item-link{
+    cursor: pointer;
     font-size: 1.5rem;
     font-family: 'Delius Unicase', cursive;
     color: rgb(64, 226, 0);

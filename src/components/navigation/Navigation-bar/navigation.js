@@ -1,4 +1,5 @@
 import React, {useState} from "react";
+import { useNavigate } from "react-router-dom";
 import { Navbar, NavItem, Nav, NavbarToggler, NavbarBrand, NavLink,
         Offcanvas, OffcanvasHeader, OffcanvasBody, Container } from "reactstrap";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -7,6 +8,8 @@ import { faHome, faMusic, faBell, faSignInAlt } from "@fortawesome/free-solid-sv
 import "./navigation.css";
 
 const Navigation = (props) => {
+    const navigate = useNavigate();
+
     const [isOpen, setIsOpen] = useState(false);
 
     const updateNavClick = () => {
@@ -23,7 +26,7 @@ const Navigation = (props) => {
                     expand="false"
                     className="one-row"
                 >
-                    <NavbarBrand href="/" className="me-auto">
+                    <NavbarBrand onClick={() => navigate('/')} className="me-auto">
                         <div className="navbarHead">
                             SANGEET
                         </div>
@@ -38,7 +41,7 @@ const Navigation = (props) => {
                         <OffcanvasBody className="navbar-menu-links">
                             <Nav className="ms-auto" navbar>
                                 <NavItem className="navbar-item">
-                                    <NavLink className="navbar-item-link" href="/">
+                                    <NavLink className="navbar-item-link" onClick={() => navigate('/')}>
                                         <FontAwesomeIcon icon={faHome} /> 
                                             <span className="extra-spacing" /> Home
                                     </NavLink>

@@ -1,0 +1,64 @@
+.category-list-heading{
+    color: #fff;
+    padding-left: 1rem;   
+}
+
+.custom-card-items:focus-visible{
+    outline: none;
+}
+
+.artist-card-image-container{
+    width: 120px;
+    height: 120px;
+    margin: auto;
+    overflow: hidden;
+}
+
+@media screen and (max-width: 524px) {
+    .artist-card-image-container{
+        width: 100px;
+        height: 100px;
+    }
+}
+
+.artist-card-image{
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    color: #eee;
+    text-align: center;
+}
+
+.card-text-container{
+    width: 100%;
+    margin-top: .5rem;
+}
+
+.card-text{
+    width: 90%;
+    margin: auto;
+    padding: 0rem 1rem;
+}
+
+.artist-name{
+    color: rgb(64, 226, 0) !important;
+    margin: 0;
+    line-height: 1.5rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-decoration: none;
+}
+
+.artist-name:hover{
+    color: #fff !important;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+@media screen and (max-width: 425px) {
+
+    .artist-name{
+        font-size: 1.2rem;
+    }
+}

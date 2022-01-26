@@ -2,11 +2,11 @@
     width: 100%;
 }
 
-@media screen and (min-width: 1200px) {
+/* @media screen and (min-width: 1200px) {
     .slider-container{
         width: 1200px !important;
     }
-}
+} */
 
 .category-list-heading{
     color: #fff;
@@ -35,7 +35,7 @@
 }
 
 .card-image:hover{
-    transform: scale(1.2);
+    transform: scale(1.1);
 }
 
 .artist-card-image-container{
@@ -71,22 +71,36 @@
     padding: 0rem 1rem;
 }
 
-.card-text>h4,
-.card-text>h5,
-.card-text>h6{
+.song-name,
+.album-title,
+.artist-name{
     color: rgb(64, 226, 0) !important;
     margin: 0;
     line-height: 1.5rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    text-decoration: none;
 }
 
-.card-text>h4:hover,
-.card-text>h5:hover,
+.song-name:hover,
 .album-title:hover,
 .artist-name:hover{
     color: #fff !important;
-    /* text-decoration: underline; */
+    text-decoration: underline !important;
     cursor: pointer;
+}
+
+@media screen and (max-width: 425px) {
+    .song-name{
+        font-size: 1.1rem;
+    }
+
+    .album-title{
+        font-size: .9rem;
+    }
+
+    .artist-name{
+        font-size: 1rem;
+    }
 }

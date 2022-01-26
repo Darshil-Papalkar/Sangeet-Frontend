@@ -26,7 +26,7 @@ const NewMusicAdd = (props) => {
     const [artistList, setArtistList] = useState([]);
     const [categoryList, setCategoryList] = useState([]);
 
-    const {genre, category, musicName, artist, musicImgPath, musicImgName, addMusicWidget, hiddenFileInput,
+    const {genre, category, musicName, artist, musicImgPath, musicImgName, addMusicWidget, hiddenFileInput, musicDuration,
         hiddenMusicInput, uploadMusic, handleClick, handleChange, saveUploadMusic, handleMusicClick, fav, setFav,
         uploadMusicImage, handleGenreChange, removeMusicDetails, removeSelectedSong, removeSelectedImage,
         updateAddMusicWidget, handleCategoryChange, musicTitle, albumTitle, setMusicTitle, setAlbumTitle} = props;
@@ -115,6 +115,16 @@ const NewMusicAdd = (props) => {
 
     }, []);
 
+    const calculateSongTime = (time) => {
+        // console.log(time);
+        if(time !== Infinity){
+            const minutes = Math.floor(time / 60);
+            const seconds = Math.floor(time % 60);
+            return `${minutes < 10 ? '0' + String(minutes) : String(minutes)}:${seconds < 10 ? '0' + String(seconds) : String(seconds)}`;
+        } 
+        return time;
+    };
+
     return (
         <React.Fragment>
             
@@ -183,7 +193,12 @@ const NewMusicAdd = (props) => {
                                 <div className='music-upload-button'>
                                     <div className='music-upload-detail d-flex justify-content-center align-items-center'>
                                         <span className='music-image-title' style={{textAlign: "center"}}>
-                                            " {musicName.trim().length === 0 ? "Select File" : musicName} "
+                                            <div>
+                                                " {musicName.trim().length === 0 ? "Select File" : musicName} "
+                                            </div>
+                                            <div>
+                                                Duration: {musicDuration !== 0 ? calculateSongTime(musicDuration) : '00:00'}
+                                            </div>
                                         </span>
                                         {musicName.trim().length === 0 ? 
                                             <React.Fragment /> : 
