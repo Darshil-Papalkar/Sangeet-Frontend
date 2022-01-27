@@ -225,6 +225,7 @@ const Admin = () => {
             artistController?.abort();
             genreController?.abort();
             categoryController?.abort();
+            setLoader(false);
         }
     
     }, [tabId]);

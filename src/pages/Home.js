@@ -205,7 +205,10 @@ const Home = (props) => {
         getAudioData();
 
         return () => {
-            abortController?.abort();
+            if(abortController){
+                abortController?.abort();
+                setLoader(false);
+            }
         }
 
     }, []);

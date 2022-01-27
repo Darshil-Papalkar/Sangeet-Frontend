@@ -72,7 +72,12 @@ const Artist = (props) => {
 
         getArtistDetails();
 
-        return () => abortController?.abort();
+        return () => {
+            if(abortController){
+                abortController?.abort();
+                setLoader(false);
+            }
+        }
 
     }, [params]);
 

@@ -1,6 +1,7 @@
 export function register(){
     if('serviceWorker' in navigator){
         const url = "http://localhost:3000/sw.js";
+        // const url = "http://3.109.59.110:5000/"
         navigator.serviceWorker.register(url, {
             scope: '/',
         })

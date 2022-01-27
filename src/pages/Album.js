@@ -70,7 +70,12 @@ const Album = (props) => {
 
         getAlbum();
 
-        return () => abortController?.abort();
+        return () => {
+            if(abortController){
+                abortController?.abort();
+                setLoader(false);
+            }
+        }
 
     }, [params]);
 
