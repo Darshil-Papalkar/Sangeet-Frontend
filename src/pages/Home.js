@@ -171,6 +171,8 @@ const Home = (props) => {
 
     const [list, dispatch] = useReducer(reducer, musicList);
 
+    // console.log(loader, list);
+
     useEffect(() => {
 
         let abortController = new AbortController();
