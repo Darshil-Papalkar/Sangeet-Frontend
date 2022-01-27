@@ -30,7 +30,7 @@ function App() {
   const [playlist, setPlaylist] = useState([]);
   const [playing, setPlaying] = useState(false);
   const [currentSong, setCurrentSong] = useState({});
-  
+
   const loadAudio = (ll, item, e) => {
     if(e)
         e.preventDefault();

@@ -1,9 +1,9 @@
 import { render, screen } from '@testing-library/react';
 import "@testing-library/jest-dom/extend-expect";
-import App from './App';
+import Home from "./pages/Home";
 
 test('pass functions to matchers', () => {
-  render(<App />);
+  render(<Home />);
   // const linkElement = screen.getByText("SANGEET");
   // expect(linkElement).toBeInTheDocument();
 

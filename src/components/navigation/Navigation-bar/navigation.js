@@ -26,8 +26,8 @@ const Navigation = (props) => {
                     expand="false"
                     className="one-row"
                 >
-                    <NavbarBrand onClick={() => navigate('/')} className="me-auto">
-                        <div className="navbarHead">
+                    <NavbarBrand className="me-auto">
+                        <div className="navbarHead" onClick={() => navigate('/')}>
                             SANGEET
                         </div>
                     </NavbarBrand>
@@ -41,27 +41,27 @@ const Navigation = (props) => {
                         <OffcanvasBody className="navbar-menu-links">
                             <Nav className="ms-auto" navbar>
                                 <NavItem className="navbar-item">
-                                    <NavLink className="navbar-item-link" onClick={() => navigate('/')}>
+                                    <NavLink className="navbar-item-link" onClick={() => navigate("/")}>
                                         <FontAwesomeIcon icon={faHome} /> 
-                                            <span className="extra-spacing" /> Home
+                                        <span className="extra-spacing" /> Home
                                     </NavLink>
                                 </NavItem>
                                 <NavItem className="navbar-item">
                                     <NavLink className="navbar-item-link">
                                         <FontAwesomeIcon icon={faMusic} /> 
-                                            <span className="extra-spacing" /> Playlists
+                                        <span className="extra-spacing" /> Playlists
                                     </NavLink>
                                 </NavItem>
                                 <NavItem className="navbar-item">
                                     <NavLink className="navbar-item-link">
                                         <FontAwesomeIcon icon={faBell} /> 
-                                            <span className="extra-spacing" /> Notifications
+                                        <span className="extra-spacing" /> Notifications
                                     </NavLink>
                                 </NavItem>
                                 <NavItem className="navbar-item">
                                     <NavLink className="navbar-item-link">
                                         <FontAwesomeIcon icon={faSignInAlt} /> 
-                                            <span className="extra-spacing" /> Login / SignUp 
+                                        <span className="extra-spacing" /> Login / SignUp 
                                     </NavLink>
                                 </NavItem>
                             </Nav>
