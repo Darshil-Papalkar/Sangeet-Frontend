@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import {Container, Nav, NavItem, NavLink, TabContent, TabPane, Row, Col} from 'reactstrap';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
@@ -14,19 +14,20 @@ import CategoryIcon from '@mui/icons-material/Category';
 import DomainIcon from '@mui/icons-material/Domain';
 import CellTowerIcon from '@mui/icons-material/CellTower';
 
+import * as serviceWorker from "../client/index";
 import AddNewModal from '../components/Admin/addNewModal';
 import NewMusicAdd from '../components/Admin/newMusicAdd';
-import * as serviceWorker from "../client/index";
 
 import GenreTable from '../components/Tables/Genre-table';
 import ArtistsTable from '../components/Tables/artists-table';
 import StickyHeadTable from "../components/Tables/music-table";
 import CategoryTable from '../components/Tables/category-table';
 
-import SpinnerGrow from "../components/spinner/spinner-grow";
-import EditExistingMusic from '../components/Admin/editExistingMusic';
-import { DeleteWarning } from '../components/Warning/Warning';
+import { IsDark } from "../App";
 import { apiLinks } from '../connection.config';
+import SpinnerGrow from "../components/spinner/spinner-grow";
+import { DeleteWarning } from '../components/Warning/Warning';
+import EditExistingMusic from '../components/Admin/editExistingMusic';
 import EditExistingModal from '../components/Admin/editExistingModal';
 import { Success, Error } from '../components/Notification/Notification';
 import AdminNavigation from '../components/navigation/Navigation-bar/admin-navigation';
@@ -37,6 +38,8 @@ import "./admin.css";
 let genreRows = [], artistRows = [], categoryRows = [], musicRows = [];
 
 const Admin = () => {
+    const isDark = useContext(IsDark);
+
     const hiddenFileInput = useRef(null);
     const hiddenMusicInput = useRef(null);
     const audioDurationRef = useRef(null);
@@ -712,28 +715,28 @@ const Admin = () => {
 
                 {/* <Container fluid>
                      */}
-                    <Box className='add-button-speed-dial' sx={{ height: 300, transform: 'translateZ(0px)', flexGrow: 1 }}>
-                        <Backdrop open={open} />
-                        <SpeedDial
-                            ariaLabel="SpeedDial tooltip example"
-                            sx={{ position: 'absolute', bottom: 16, right: 16 }}
-                            icon={<SpeedDialIcon />}
-                            onClose={handleClose}
-                            onOpen={handleOpen}
-                            open={open}
-                            className="speed-dial-custom"
-                        >
-                            {actions.map((action, index) => (
-                                <SpeedDialAction
-                                    key={action.name}
-                                    icon={action.icon}
-                                    tooltipTitle={action.name}
-                                    tooltipOpen
-                                    onClick={action.click}
-                                />
-                            ))}
-                        </SpeedDial>
-                    </Box>
+                <Box className='add-button-speed-dial' sx={{ height: 300, transform: 'translateZ(0px)', flexGrow: 1 }}>
+                    <Backdrop open={open} />
+                    <SpeedDial
+                        ariaLabel="SpeedDial tooltip example"
+                        sx={{ position: 'absolute', bottom: 16, right: 16 }}
+                        icon={<SpeedDialIcon />}
+                        onClose={handleClose}
+                        onOpen={handleOpen}
+                        open={open}
+                        className="speed-dial-custom"
+                    >
+                        {actions.map((action, index) => (
+                            <SpeedDialAction
+                                key={action.name}
+                                icon={action.icon}
+                                tooltipTitle={action.name}
+                                tooltipOpen
+                                onClick={action.click}
+                            />
+                        ))}
+                    </SpeedDial>
+                </Box>
 
                 {/* </Container> */}
                 
@@ -776,7 +779,8 @@ const Admin = () => {
                             </Nav>
                             <Autocomplete
                                 {...defaultProps}
-                                id="auto-complete"
+                                id={`auto-complete`}
+                                className={`autoComplete ${isDark ? "dark" : "light"}`}
                                 onChange={(evt, val) => getSearchedAutoCompleteRow(val)}
                                 autoComplete
                                 includeInputInList

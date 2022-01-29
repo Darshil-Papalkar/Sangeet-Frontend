@@ -3,12 +3,14 @@ import { Link } from "react-router-dom";
 import React, { useContext } from "react";
 import CircleIcon from '@mui/icons-material/Circle';
 
+import { IsDark } from "../../App";
 import { apiLinks } from "../../connection.config";
 import { CalculateTimeContext, SongList, Artists, Duration } from "../../pages/Album";
 
 import "./header.css";
 
 const Header = (props) => {
+    const isDark = useContext(IsDark);
     const artists = useContext(Artists);
     const songList = useContext(SongList);
     const totalDuration = useContext(Duration);
@@ -18,7 +20,7 @@ const Header = (props) => {
         <React.Fragment>
             <Container>
                 <div className="album-container">
-                    <div className="album-image-container">
+                    <div className={`album-image-container ${isDark ? "dark" : "light"}`}>
                         <img 
                             className="album-image"
                             src={apiLinks.getImage + songList[0]?.musicImageKey} 
@@ -38,7 +40,7 @@ const Header = (props) => {
                                     artists?.map((artist, idx) => {
                                         return (
                                             <span key={idx}>
-                                                <Link to={`/artist/${artist}`}>
+                                                <Link className={`artist-${isDark ? "dark" : "light"}`} to={`/artist/${artist}`}>
                                                     {artist}
                                                 </Link>
                                                 {idx < (artists.length - 1) ? " , " : " "}

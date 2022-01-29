@@ -25,11 +25,11 @@
 }
 
 .bg-fade{
-    background-color: #fffc !important;
+    /* background-color: #fffc !important; */
 }
 
-.admin-table-heading{
-    background-color: #fff0 !important;
+.admin-table-heading.dark{
+    /* background-color: #fff0 !important; */
 }
 
 .navtabs-autocomplete{
@@ -53,6 +53,7 @@
 }
 
 .align-bottom-flex{
+    border: none !important;
     align-items: flex-end;
 }
 
@@ -60,15 +61,26 @@
     width: max-content;
 }
 
-#auto-complete, 
-#auto-complete-label,
-.MuiAutocomplete-endAdornment>button{
+.autoComplete.dark #auto-complete, 
+.autoComplete.dark #auto-complete-label,
+.autoComplete.dark .MuiAutocomplete-endAdornment>button{
     color: #fff;
 }
 
-.css-ghsjzk-MuiInputBase-root-MuiInput-root::before{
+.autoComplete.light #auto-complete, 
+.autoComplete.light #auto-complete-label,
+.autoComplete.light .MuiAutocomplete-endAdornment>button{
+    color: #000;
+}
+
+.autoComplete.dark .css-ghsjzk-MuiInputBase-root-MuiInput-root::before{
     border-bottom-color: #fff !important;
 }
+
+.autoComplete.light .css-ghsjzk-MuiInputBase-root-MuiInput-root::before{
+    border-bottom-color: #000 !important;
+}
+
 
 .css-ghsjzk-MuiInputBase-root-MuiInput-root:after {
     border-bottom: 2px solid rgb(64, 226, 0) !important;

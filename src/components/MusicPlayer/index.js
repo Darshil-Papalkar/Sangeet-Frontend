@@ -3,7 +3,6 @@ import React, { useState, useRef, useEffect, useCallback,
 import { Container } from "reactstrap";
 import { Link } from "react-router-dom";
 import PauseIcon from '@mui/icons-material/Pause';
-import { Error } from '../Notification/Notification';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
 import { SpinnerRotate } from "../spinner/spinner-grow";
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -12,7 +11,7 @@ import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import VolumeOffIcon from '@mui/icons-material/VolumeOff';
 import VolumeDownIcon from '@mui/icons-material/VolumeDown';
 
-import { LoadAudio } from "../../App";
+import { LoadAudio, IsDark } from "../../App";
 import { apiLinks } from "../../connection.config";
 
 import "./index.css";
@@ -22,6 +21,7 @@ const MusicPlayer = forwardRef((props, ref) => {
     const borderRef = useRef(null);
     const volumeRef = useRef(null);
 
+    const isDark = useContext(IsDark);
     const loadAudio = useContext(LoadAudio);
 
     const { playing, setPlaying } = props;
@@ -158,7 +158,7 @@ const MusicPlayer = forwardRef((props, ref) => {
             }
             catch(err){
                 console.log("An Error occured while loading music", err);
-                Error(err.message);
+                // Error(err.message);
             }
             finally{
                 audioRef.current.oncanplaythrough = () => {
@@ -186,16 +186,14 @@ const MusicPlayer = forwardRef((props, ref) => {
         props?.currentSong?.musicTitle, currentSong?.musicTitle, nextSong, updateBorderRef, loadAudio
     ]);
 
-    // console.log(currentSong);
-
     return(
         <>
 
-            <div className="mt-2 bottom-navigation-container">
+            <div className={`mt-2 bottom-navigation-container ${isDark ? "player-dark" : "player-light"}`}>
                 <div ref={borderRef} className="top-one-row"/>
                 <div className="custom-bottom-navigation" >
-                    <div className="timeline start">{calculateSongTime(currentTime)}</div>
-                    <div className="timeline end">{endTime !== Infinity ? calculateSongTime(endTime): '--:--'}</div>
+                    <div className={`timeline start ${isDark ? "dark-time" : "light-time"}`}>{calculateSongTime(currentTime)}</div>
+                    <div className={`timeline end ${isDark ? "dark-time" : "light-time"}`}>{endTime !== Infinity ? calculateSongTime(endTime): '--:--'}</div>
                     <div className="musicDetails">
                         <div className="image-box">
                             <div className="navbarHead-img-container">
@@ -213,7 +211,7 @@ const MusicPlayer = forwardRef((props, ref) => {
                                 {currentSong.musicTitle}
                             </h5>
                             <h6 className="music-album">
-                                <Link to={`/album/${currentSong.albumTitle}`}>
+                                <Link className={`${isDark ? "dark-link-hover" : "light-link-hover"}`} to={`/album/${currentSong.albumTitle}`}>
                                     {currentSong.albumTitle}
                                 </Link>
                             </h6>
@@ -221,10 +219,10 @@ const MusicPlayer = forwardRef((props, ref) => {
                     </div>
 
                     <div className="custom-button-group-container">
-                        <div className="custom-button-group">
+                        <div className={`custom-button-group ${isDark ? "dark" : "light"}`}>
                             <SkipPreviousIcon 
                                 onClick={currentSongIdx > 0 ? prevSong : null}
-                                className={currentSongIdx === 0 ? "disabled-svg": ''}
+                                className={currentSongIdx === 0 ? `disabled-svg ${isDark ? "dark" : "light"}`: ''}
                                 style={currentSongIdx > 0 ? 
                                     { cursor: 'pointer'} : { cursor: 'not-allowed' }} 
                             />
@@ -240,7 +238,7 @@ const MusicPlayer = forwardRef((props, ref) => {
                             }
                             <SkipNextIcon 
                                 onClick={currentSongIdx < (playlist.length - 1) ? nextSong: null}
-                                className={currentSongIdx === (playlist.length - 1) ? "disabled-svg": ''}
+                                className={currentSongIdx === (playlist.length - 1) ? `disabled-svg ${isDark ? "dark" : "light"}`: ''}
                                 style={
                                         currentSongIdx < (playlist.length - 1) ? 
                                             { cursor: 'pointer'} : { cursor: 'not-allowed' }} 

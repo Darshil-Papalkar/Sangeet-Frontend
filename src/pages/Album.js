@@ -61,7 +61,8 @@ const Album = (props) => {
                 }
             }
             catch(err){
-                Error(err.message);
+                console.log(err);
+                // Error(err.message);
             }
             finally{
                 setLoader(false);

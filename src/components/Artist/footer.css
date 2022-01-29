@@ -1,6 +1,13 @@
 .category-list-heading{
-    color: #fff;
     padding-left: 1rem;   
+}
+
+.category-list-heading.light{
+    color: #000;
+}
+
+.category-list-heading.dark{
+    color: #fff;
 }
 
 .custom-card-items:focus-visible{
@@ -47,13 +54,16 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    cursor: pointer;
     text-decoration: none;
 }
 
-.artist-name:hover{
+.artist-name.dark:hover{
     color: #fff !important;
-    text-decoration: underline;
-    cursor: pointer;
+}
+
+.artist-name.light:hover{
+    color: #000 !important;
 }
 
 @media screen and (max-width: 425px) {

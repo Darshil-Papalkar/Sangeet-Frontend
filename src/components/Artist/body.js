@@ -7,12 +7,13 @@ import PauseCircle from "@mui/icons-material/PauseCircle";
 import EqualizerIcon from '@mui/icons-material/Equalizer';
 
 import { CalculateTimeContext, SongList } from "../../pages/Artist";
-import { PlayerContext, PlayPause, Playing, LoadAudio } from "../../App";
+import { PlayerContext, PlayPause, Playing, LoadAudio, IsDark } from "../../App";
 
 import "./body.css";
 
 const Body = (props) => {
     
+    const isDark = useContext(IsDark);
     const paused = useContext(Playing);
     const songList = useContext(SongList);
     const loadAudio = useContext(LoadAudio);
@@ -45,14 +46,15 @@ const Body = (props) => {
                         songList.map((song, index) => {
                             return (
                                 <div key={index}>
-                                    <div className="table-row"
+                                    <div className={`table-row ${isDark ? "dark" : "light"}`}
                                         key={song.id}
                                         style={currentPlayer.id && currentPlayer.id === song.id ? {color: "#eee"}: null}
                                         onMouseEnter={(e) => {updatePlayId(song.id)}}
                                         onMouseLeave={(e) => {updatePlayId(0)}}
+                                        onClick={e => loadAudio(songList, song, e)}
                                     >
                                         <div className="srno-title">
-                                            <div className="srno" onClick={e => loadAudio(songList, song, e)}>
+                                            <div className="srno">
                                                 {
                                                     currentPlayer.id && currentPlayer.id === song.id ?
                                                     <span

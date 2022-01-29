@@ -3,7 +3,8 @@
     cursor: default;
 }
 
-.table-row{
+.table-row-dark,
+.table-row-light{
     color: rgb(64, 226, 0);
     display: flex;
     flex-direction: row;
@@ -16,8 +17,12 @@
     align-content: center;
 }
 
-.table-row:hover{
+.table-row-dark:hover{
     color: #eee;
+}
+
+.table-row-light:hover{
+    color: #111;
 }
 
 .srno-title{
@@ -41,10 +46,6 @@
 .song-list-artist > a{
     text-decoration: none;
     color: inherit;
-}
-
-.song-list-artist > a:hover{
-    text-decoration: underline;
 }
 
 .custom-artists{

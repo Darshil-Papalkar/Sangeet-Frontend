@@ -4,6 +4,7 @@ import { Container } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import React, { useContext } from "react";
 
+import { IsDark } from '../../App';
 import { Artists } from "../../pages/Album";
 import { apiLinks } from "../../connection.config";
 
@@ -56,7 +57,9 @@ const settings = {
 
 const Footer = (props) => {
 
+    const isDark = useContext(IsDark);
     let artistList = useContext(Artists);
+
     artistList = artistList?.filter(artist => artist !== "Various Artists");
 
     return (
@@ -64,7 +67,7 @@ const Footer = (props) => {
             <Container key="artist-container" className="mt-5">
                 { artistList.length ? 
                     <Container className="slider-container">
-                        <h2 className="category-list-heading" title="Artists">Album Artists</h2>
+                        <h2 className={`category-list-heading ${isDark ? "dark" : "light"}`} title="Artists">Album Artists</h2>
                         <Slider {...settings}>
                         { artistList.map((artist, id) => {
                             return (
@@ -79,7 +82,7 @@ const Footer = (props) => {
                                     <div className="card-text-container">
                                         <div className="card-text" style={{textAlign: "center"}}>
                                             <h4 className="pt-3 pb-3 artist-name" title={artist}>
-                                                <Link to={`/artist/${artist}`} className='artist-name'>
+                                                <Link to={`/artist/${artist}`} className={`artist-name ${isDark ? "dark" : "light"}`}>
                                                     {artist}
                                                 </Link>
                                             </h4>

@@ -13,6 +13,13 @@
     width: 11rem;
     overflow: hidden;
     border-radius: 1rem;
+}
+
+.album-image-container.light{
+    box-shadow: 0 0 12px 0 #111;
+}
+
+.album-image-container.dark{
     box-shadow: 0 0 12px 0 #8da8d7;
 }
 
@@ -38,9 +45,12 @@
     padding-bottom: 5px;
 }
 
-.album-artists > span > a:hover{
-    text-decoration: underline;
+.artist-dark:hover{
     color: #eee;
+}
+
+.artist-light:hover{
+    color: #222;
 }
 
 @media screen and (max-width: 768px) {

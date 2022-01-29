@@ -2,16 +2,39 @@
     width: 100%;
 }
 
-/* @media screen and (min-width: 1200px) {
-    .slider-container{
-        width: 1200px !important;
-    }
-} */
+.slick-slide{
+    padding: 0 .3rem;
+}
 
 .category-list-heading{
-    color: #fff;
     padding-left: 1rem;   
 }
+
+.category-list-heading.light-heading{
+    color: #000;
+}
+
+.category-list-heading.dark-heading{
+    color: #fff;
+}
+
+.song-list-items{
+    transition: .3s all linear;
+    padding: .5rem 0;
+    border-radius: 5px;
+}
+
+.dark-card{
+    background-color: rgba(255, 255, 255, 0.06);
+}
+
+.light-card{
+    background-color: #ffffff;
+}
+
+/* .custom-card-items:hover{
+    background-color: rgba(255, 255, 255, 0.267);
+} */
 
 .custom-card-items:focus-visible{
     outline: none;
@@ -24,6 +47,7 @@
     display: flex;
     overflow: hidden;
     border-radius: 10px;
+    position: relative;
 }
 
 .card-image{
@@ -31,11 +55,28 @@
     height: 100%;
     color: #eee;
     text-align: center;
-    transition: .5s ease-in-out;
 }
 
-.card-image:hover{
-    transform: scale(1.1);
+.hide-hover-play-icon{
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    display: none;
+    transition: 1.5s ease-in-out;
+}
+
+.show{
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+}
+
+.play-icon-image-overlay{
+    color: rgb(64, 226, 0);
+    font-size: 4rem !important;
 }
 
 .artist-card-image-container{
@@ -81,14 +122,15 @@
     overflow: hidden;
     text-overflow: ellipsis;
     text-decoration: none;
+    cursor: pointer;
 }
 
-.song-name:hover,
-.album-title:hover,
-.artist-name:hover{
+.hover-dark:hover{
     color: #fff !important;
-    text-decoration: underline !important;
-    cursor: pointer;
+}
+
+.hover-light:hover{
+    color: #000 !important;
 }
 
 @media screen and (max-width: 425px) {

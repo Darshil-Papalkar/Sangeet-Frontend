@@ -17,6 +17,8 @@ import MusicPlayer from "./components/MusicPlayer/index.js";
 import './App.css';
 import "react-toastify/dist/ReactToastify.css";
 
+export const IsDark = React.createContext();
+export const SetIsDark = React.createContext();
 export const Playing = React.createContext();
 export const LoadAudio = React.createContext();
 export const PlayPause = React.createContext();
@@ -27,6 +29,7 @@ function App() {
   
   const player = useRef(null);
 
+  const [isDark, setIsDark] = useState(true);
   const [playlist, setPlaylist] = useState([]);
   const [playing, setPlaying] = useState(false);
   const [currentSong, setCurrentSong] = useState({});
@@ -95,7 +98,6 @@ function App() {
     return () => {
       document.removeEventListener('keypress', handleKeyPress);
     };
-
   }, []);
   
   return (
@@ -104,44 +106,48 @@ function App() {
         <PlayPause.Provider value={handleKeyPress}>
           <Playing.Provider value={playing}>
             <LoadAudio.Provider value={loadAudio}>
-              <div className="app-bg">
-                <Router>
-                  <Routes>
+              <IsDark.Provider value={isDark}>
+                <SetIsDark.Provider value={setIsDark}>
+                  <div className={`app-bg ${isDark ? "dark" : "light"}`}>
+                    <Router>
+                      <Routes>
 
-                    <Route exact path="/" element={<Home />} />
-                    <Route path="/album/:albumName" element={<Album />} />
-                    <Route path="/artist/:artistName" element={<Artist />} />
-                    <Route path="/admin/" element={<Admin />} />
-                    <Route path="*" element={<Error />} />
+                        <Route exact path="/" element={<Home />} />
+                        <Route path="/album/:albumName" element={<Album />} />
+                        <Route path="/artist/:artistName" element={<Artist />} />
+                        <Route path="/admin/" element={<Admin />} />
+                        <Route path="*" element={<Error />} />
 
-                  </Routes>
-                  {
-                      playlist.length ? 
-                          <MusicPlayer 
-                              ref={player}
-                              currentSong={currentSong}
-                              playlist={playlist}
-                              setCurrentSong={setCurrentSong}
-                              playing={playing}
-                              setPlaying={setPlaying}
-                          />
-                          : <React.Fragment />
-                  }
-                </Router>
-              </div>
-              <ToastContainer 
-                  position='top-right'
-                  autoClose={3000}
-                  hideProgressBar={false}
-                  newestOnTop={true}
-                  closeOnClick={true}
-                  rtl={false}
-                  pauseOnFocusLoss
-                  draggable
-                  pauseOnHover
-                  theme="dark"
-                  transition={Flip}
-              />
+                      </Routes>
+                      {
+                          playlist.length ? 
+                              <MusicPlayer 
+                                  ref={player}
+                                  currentSong={currentSong}
+                                  playlist={playlist}
+                                  setCurrentSong={setCurrentSong}
+                                  playing={playing}
+                                  setPlaying={setPlaying}
+                              />
+                              : <React.Fragment />
+                      }
+                    </Router>
+                  </div>
+                  <ToastContainer 
+                      position='top-right'
+                      autoClose={3000}
+                      hideProgressBar={false}
+                      newestOnTop={true}
+                      closeOnClick={true}
+                      rtl={false}
+                      pauseOnFocusLoss
+                      draggable
+                      pauseOnHover
+                      theme="dark"
+                      transition={Flip}
+                  />
+                </SetIsDark.Provider>
+              </IsDark.Provider>
             </LoadAudio.Provider>
           </Playing.Provider>
         </PlayPause.Provider>

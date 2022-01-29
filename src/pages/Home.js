@@ -4,11 +4,12 @@ import { Container } from 'reactstrap';
 import { Link } from "react-router-dom";
 import React, { useEffect, useReducer, useState, useContext } from "react";
 
-import { LoadAudio } from "../App";
 import { apiLinks } from '../connection.config';
+import PauseIcon from '@mui/icons-material/Pause';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import SpinnerGrow from "../components/spinner/spinner-grow";
-import { Error } from "../components/Notification/Notification";
 import Navigation from "../components/navigation/Navigation-bar/navigation";
+import { LoadAudio, PlayerContext, PlayPause, Playing, IsDark } from "../App";
 
 import "./Home.css";
 
@@ -17,16 +18,12 @@ const musicList = {};
 const reducer = (state, action) => {
     switch(action.type){
         case 'FETCH_SUCCESS':
+        case "FETCH_CACHE":
             const artistData = action.artistData.filter(item => item.show === true);
             const genreData = action.genreData.filter(item => item.show === true);
             const categoryData = action.categoryData.filter(item => item.show === true);
             const term = action.message.filter(item => item.show === true);
             
-            // console.log(term);
-            // console.log(artistData);
-            // console.log(genreData);
-            // console.log(categoryData);
-
             let genreList = {};
             let artistList = {};
             let albumList = {};
@@ -100,8 +97,9 @@ const reducer = (state, action) => {
             return list;
 
         case 'FETCH_ERROR':
-            Error(action.message);
+            // Error(action.message);
             return state;
+
         default:
             return state;
     }
@@ -165,13 +163,27 @@ const settings = {
 };
 
 const Home = (props) => {
+    const isDark = useContext(IsDark);
+    const playing = useContext(Playing);
     const loadAudio = useContext(LoadAudio);
+    const playPauseState = useContext(PlayPause);
+    const currentSong = useContext(PlayerContext);
 
     const [loader, setLoader] = useState(false);
+    const [mouseId, setMouseId] = useState(0);
 
     const [list, dispatch] = useReducer(reducer, musicList);
 
     // console.log(loader, list);
+
+    const handleStateChange = (e) => {
+        const event = {
+            ...e,
+            code: "Space",
+            preventDefault : () => {}
+        };
+        playPauseState(event);
+    };
 
     useEffect(() => {
 
@@ -190,6 +202,14 @@ const Home = (props) => {
                                 genreData: response.data.genreData,
                                 categoryData: response.data.categoryData
                             });
+                    if(window.localStorage){
+                        window.localStorage.setItem("Song Data", JSON.stringify({
+                            message: response.data.message,
+                            artistData: response.data.artistData,
+                            genreData: response.data.genreData,
+                            categoryData: response.data.categoryData
+                        }));
+                    }
                 }
                 else{
                     dispatch({ type: 'FETCH_ERROR', message: response.data.message });
@@ -203,8 +223,18 @@ const Home = (props) => {
                 setLoader(false);
             }
         };
-
-        getAudioData();
+    
+        if(window?.localStorage?.getItem("Song Data") && Object.keys(currentSong).length !== 0){
+            const prevData = JSON.parse(window.localStorage.getItem("Song Data"));
+            // console.log(prevData);
+            if(Object.keys(prevData).length)
+                dispatch({type: "FETCH_CACHE", ...prevData})
+            else
+                getAudioData();
+            // console.log("HR");
+        }
+        else
+            getAudioData();
 
         return () => {
             if(abortController){
@@ -213,7 +243,7 @@ const Home = (props) => {
             }
         }
 
-    }, []);
+    }, [currentSong]);
 
     return (
         <div className="App">
@@ -239,12 +269,29 @@ const Home = (props) => {
 
                         return (
                             <Container key={catList} className=" mt-3 slider-container" fluid>
-                                <h2 className="category-list-heading" title={catList}>{catList}</h2>
+                                <h2 className={`category-list-heading ${isDark ? "dark-heading" : "light-heading"}`} title={catList}>{catList}</h2>
                                 <Slider {...settings}>
                                     {ll.map(item => {
                                         return (
-                                            <div key={item.id} className="mt-3 mb-3 custom-card-items">
+                                            <div key={item.id} className={`mt-3 mb-3 custom-card-items song-list-items ${isDark ? "dark-card" : "light-card"}`}
+                                                onMouseEnter={() => setMouseId(item.id)}
+                                                onMouseLeave={() => setMouseId(0)}
+                                            >
                                                 <div className="card-image-container">
+                                                    
+                                                    <div className={`hide-hover-play-icon ${mouseId === item.id || item.id === currentSong.id ? 
+                                                                                                "show": null }`}
+                                                        title={`Play ${item.musicTitle}`}
+                                                    >
+                                                        {
+                                                            item.id === currentSong.id && playing ?
+                                                            <PauseIcon className="play-icon-image-overlay" onClick={handleStateChange} /> :
+                                                            <PlayArrowIcon className="play-icon-image-overlay" 
+                                                                onClick={(e) => item.id === currentSong.id ? handleStateChange(e): loadAudio(ll, item, e)}
+                                                            />  
+                                                        }
+                                                    </div>
+                                    
                                                     <img 
                                                         src={apiLinks.getImage + item.musicImageKey} 
                                                         alt={item.musicTitle} 
@@ -253,33 +300,17 @@ const Home = (props) => {
                                                 </div>
                                                 <div className="card-text-container">
                                                     <div className="card-text">
-                                                        <h5 className="pt-3 song-name" title={`Play ${item.musicTitle}`}>
-                                                            <span style={{cursor: "pointer"}} onClick={(e) => loadAudio(ll, item, e)}>
+                                                        <h5 className={`pt-3 song-name ${isDark ? "hover-dark" : "hover-light"}`} title={`Play ${item.musicTitle}`}>
+                                                            <span style={{cursor: "pointer"}} 
+                                                                onClick={(e) => loadAudio(ll, item, e)} >
                                                                 {item.musicTitle}
                                                             </span>
                                                         </h5>
-                                                        <h6 title={`Watch ${item.albumTitle}`} className="album-title">
-                                                            <Link to={`/album/${item.albumTitle}`} className="album-title">
+                                                        <h6 title={`Watch ${item.albumTitle}`} className={`album-title ${isDark ? "hover-dark" : "hover-light"}`}>
+                                                            <Link to={`/album/${item.albumTitle}`} className={`album-title ${isDark ? "hover-dark" : "hover-light"}`}>
                                                                 {item.albumTitle}
                                                             </Link>
                                                         </h6>
-                                                        {/* <h6 className="artist-name">
-                                                            {item.artists.map((artist, idx) => {
-                                                                return (
-                                                                    <React.Fragment>
-                                                                        <span title={`Listen to ${artist}`}  key={artist}>
-                                                                            <Link to={`/artist/${artist}`} className="artist-name">
-                                                                                {artist}
-                                                                            </Link>
-                                                                        </span>
-                                                                        <span key={idx}>
-                                                                            {item.artists?.length - 1 > idx ? `, ` : ``}
-                                                                        </span>
-                                                                    </React.Fragment>
-
-                                                                )
-                                                            })}
-                                                        </h6> */}
                                                     </div>
                                                 </div>
                                             </div>
@@ -295,7 +326,7 @@ const Home = (props) => {
             <Container key="artist-container" className="mt-5" fluid>
                 { list.artistList ? 
                     <Container className="slider-container" fluid>
-                        <h2 className="category-list-heading" title="Artists">Artists</h2>
+                        <h2 className={`category-list-heading ${isDark ? "dark-heading" : "light-heading"}`} title="Artists">Artists</h2>
                         <Slider {...settings}>
                         { Object.keys(list.artistList).map((artist, id) => {
                             return (
@@ -309,8 +340,8 @@ const Home = (props) => {
                                     </div>
                                     <div className="card-text-container">
                                         <div className="card-text" style={{textAlign: "center"}}>
-                                            <h4 className="pt-3 pb-3 artist-name" title={artist}>
-                                                <Link to={`/artist/${artist}`} className="artist-name">
+                                            <h4 className={`pt-3 pb-3 artist-name ${isDark ? "hover-dark" : "hover-light"}`} title={artist}>
+                                                <Link to={`/artist/${artist}`} className={`artist-name ${isDark ? "hover-dark" : "hover-light"}`}>
                                                     {artist}
                                                 </Link>
                                             </h4>

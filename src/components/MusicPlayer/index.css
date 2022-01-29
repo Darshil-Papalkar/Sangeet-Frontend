@@ -3,7 +3,14 @@
     width: 100%;
     z-index: 3;
     bottom: 0;
+}
+
+.player-dark{
     background-color: #0A0F18;
+}
+
+.player-light{
+    background-color: #eee;
 }
 
 .custom-bottom-navigation{
@@ -26,7 +33,14 @@
 .timeline{
     position: absolute;
     top: 5px;
+}
+
+.dark-time{
     color: #fff;
+}
+
+.light-time{
+    color: #000;
 }
 
 .start{
@@ -84,9 +98,12 @@
     text-overflow: ellipsis;
 }
 
-.music-album>a:hover{
-    text-decoration: underline;
-    color:rgb(64, 226, 0)
+.dark-link-hover:hover{
+    color: #fff;
+}
+
+.light-link-hover:hover{
+    color: #000;
 }
 
 .custom-button-group-container{
@@ -97,7 +114,6 @@
 }
 
 .custom-button-group{
-    color: #eee;
     text-align: center;
     display: flex;
     align-items: center;
@@ -105,6 +121,14 @@
     align-content: center;
     flex-wrap: nowrap;
     flex-direction: row;
+}
+
+.custom-button-group.light{
+    color: #000;
+}
+
+.custom-button-group.dark{
+    color: #eee;
 }
 
 .custom-button-group>svg {
@@ -118,8 +142,12 @@
     margin-left: 1rem;
 }
 
-.disabled-svg{
+.disabled-svg.dark{
     color: rgb(84 84 84);
+}
+
+.disabled-svg.light{
+    color: #999;
 }
 
 .volume-range-slider{
