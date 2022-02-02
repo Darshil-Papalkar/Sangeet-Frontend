@@ -223,15 +223,13 @@ const Home = (props) => {
                 setLoader(false);
             }
         };
-    
+
         if(window?.localStorage?.getItem("Song Data") && Object.keys(currentSong).length !== 0){
             const prevData = JSON.parse(window.localStorage.getItem("Song Data"));
-            // console.log(prevData);
             if(Object.keys(prevData).length)
                 dispatch({type: "FETCH_CACHE", ...prevData})
             else
                 getAudioData();
-            // console.log("HR");
         }
         else
             getAudioData();
@@ -244,6 +242,8 @@ const Home = (props) => {
         }
 
     }, [currentSong]);
+
+    // console.log(list);
 
     return (
         <div className="App">
@@ -331,14 +331,14 @@ const Home = (props) => {
                         { Object.keys(list.artistList).map((artist, id) => {
                             return (
                                 <div key={id} className="mt-3 mb-3 custom-card-items">
-                                    <div className="artist-card-image-container">
+                                    <div className="artist-card-image-container d-flex">
                                         <img 
                                             src={apiLinks.getArtistImgFromName + artist} 
                                             alt={artist} 
-                                            className="artist-card-image"
+                                            className={`artist-card-image ${isDark ? "dark" : "light"}`}
                                         />
                                     </div>
-                                    <div className="card-text-container">
+                                    <div className="card-text-container mt-0">
                                         <div className="card-text" style={{textAlign: "center"}}>
                                             <h4 className={`pt-3 pb-3 artist-name ${isDark ? "hover-dark" : "hover-light"}`} title={artist}>
                                                 <Link to={`/artist/${artist}`} className={`artist-name ${isDark ? "hover-dark" : "hover-light"}`}>

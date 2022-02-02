@@ -3,12 +3,12 @@
   "name": "Sangeet - Music Player",
   "icons": [
     {
-      "src": "./assets/images/favicon.png",
+      "src": "/assets/images/favicon.png",
       "sizes": "500x500",
       "type": "image/png"
     },
     {
-      "src": "./assets/images/logo.png",
+      "src": "/assets/images/logo.png",
       "sizes":"500x500",
       "type": "image/png"
     }

@@ -86,7 +86,7 @@ const Navigation = (props) => {
                             SANGEET
                         </div>
                     </NavbarBrand>
-                    <MaterialUISwitch sx={{ m: 1 }} checked={isDark} onClick={() => setIsDark(prev => !prev)} />
+                    <MaterialUISwitch sx={{ m: 1 }} checked={isDark} onClick={setIsDark} />
                     <NavbarToggler className="me-2" onClick={updateNavClick} />
                     
                     <Offcanvas isOpen={isOpen} className="offcanvas-tag" scrollable={false}

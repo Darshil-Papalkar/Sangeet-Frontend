@@ -9,12 +9,9 @@ export function register(){
             registration.addEventListener('updatefound', function() {
               // If updatefound is fired, it means that there's
               // a new service worker being installed.
-              var installingWorker = registration.installing;
-              console.log('A new service worker is being installed:',
-                installingWorker);
-        
-              // You can listen for changes to the installing service worker's
-              // state via installingWorker.onstatechange
+              const _ = registration.installing;
+            //   console.log('A new service worker is being installed:',
+            //     installingWorker);
             });
             // registration.addEventListener('pushsubscriptionchange', function(event) {
             //     console.log(event);

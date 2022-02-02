@@ -10,6 +10,8 @@ import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import VolumeOffIcon from '@mui/icons-material/VolumeOff';
 import VolumeDownIcon from '@mui/icons-material/VolumeDown';
+import { useTheme } from '@mui/material/styles';
+import Slider from '@mui/material/Slider';
 
 import { LoadAudio, IsDark } from "../../App";
 import { apiLinks } from "../../connection.config";
@@ -17,6 +19,8 @@ import { apiLinks } from "../../connection.config";
 import "./index.css";
 
 const MusicPlayer = forwardRef((props, ref) => {
+    const theme = useTheme();
+
     const audioRef = useRef(null);
     const borderRef = useRef(null);
     const volumeRef = useRef(null);
@@ -49,12 +53,18 @@ const MusicPlayer = forwardRef((props, ref) => {
         return time;
     };
 
+    // const updateSongTime = (e) => {
+    //     console.log(e.target.value);
+    //     audioRef.current.currentTime = e.target.value;
+    //     setCurrentTime(e.target.value);
+    // };
+
     const updateBorderRef = useCallback(() => {
         setCurrentTime(audioRef.current.currentTime);
-        const percent = (audioRef.current.currentTime / endTime * 100);
-        borderRef.current.style.width = `${endTime === null ? 100 : percent}%`;
+        // const percent = (audioRef.current.currentTime / endTime * 100);
+        // borderRef.current.style.width = `${endTime === null ? 100 : percent}%`;
 
-    }, [endTime]);
+    }, []);
 
     const playPauseSong = () => {
         if(playing){
@@ -190,7 +200,46 @@ const MusicPlayer = forwardRef((props, ref) => {
         <>
 
             <div className={`mt-2 bottom-navigation-container ${isDark ? "player-dark" : "player-light"}`}>
-                <div ref={borderRef} className="top-one-row"/>
+                {/* <div ref={borderRef} className="top-one-row"/> */}
+                <Slider
+                    ref={borderRef}
+                    aria-label="time-indicator"
+                    size="small"
+                    default={0}
+                    step={1}
+                    max={endTime}
+                    value={currentTime}
+                    onChange={(e) => {
+                        audioRef.current.currentTime = parseFloat(e.target.value);
+                        setCurrentTime(e.target.value);
+                    }}
+                    sx={{
+                        color: 'rgb(64, 226, 0)',
+                        height: 4,
+                        '& .MuiSlider-thumb': {
+                        width: 15,
+                        height: 15,
+                        transition: '0.3s cubic-bezier(.47,1.64,.41,.8)',
+                        '&:before': {
+                            boxShadow: '0 2px 12px 0 rgba(0,0,0,0.4)',
+                        },
+                        '&:hover, &.Mui-focusVisible': {
+                            boxShadow: `0px 0px 0px 8px ${
+                            theme.palette.mode === 'dark'
+                                ? 'rgb(255 255 255 / 16%)'
+                                : 'rgb(0 0 0 / 16%)'
+                            }`,
+                        },
+                        '&.Mui-active': {
+                            width: 25,
+                            height: 25,
+                        },
+                        },
+                        '& .MuiSlider-rail': {
+                        opacity: 0.28,
+                        },
+                    }}
+                    />
                 <div className="custom-bottom-navigation" >
                     <div className={`timeline start ${isDark ? "dark-time" : "light-time"}`}>{calculateSongTime(currentTime)}</div>
                     <div className={`timeline end ${isDark ? "dark-time" : "light-time"}`}>{endTime !== Infinity ? calculateSongTime(endTime): '--:--'}</div>

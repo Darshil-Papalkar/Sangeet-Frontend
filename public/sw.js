@@ -1,8 +1,13 @@
 this.addEventListener('push', (e) => {
+    
     const data = e.data.json();
-    this.registration.showNotification(data.title, {
+    return this.registration.showNotification(data.title, {
         action: data.action,
         body: data.body,
-        icon: data.icon
+        vibrate: [200, 100, 200, 100, 200, 100, 200],
+        icon: data.icon,
     });
+
 });
+
+

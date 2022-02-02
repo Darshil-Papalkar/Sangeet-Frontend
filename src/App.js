@@ -10,7 +10,7 @@ import Error from './pages/Error.js';
 import Album from './pages/Album.js';
 import Admin from './pages/admin.js';
 import Artist from "./pages/Artist.js";
-import { Subscribe } from './client/index';
+import { Subscribe, Unsubscribe } from './client/index';
 import * as serviceWorker from './client/serviceWorker.js';
 import MusicPlayer from "./components/MusicPlayer/index.js";
 
@@ -75,6 +75,20 @@ function App() {
     return false;
   };
 
+  const updateDark = () => {
+    window?.localStorage?.setItem("mode", !isDark);
+    setIsDark(prev => !prev);
+  };
+
+  useEffect(() => {
+    if(Object.keys(currentSong).length > 0){
+      document.title = currentSong.musicTitle;
+    }
+    else{
+      document.title = "Sangeet - Ad Free Music App"
+    }
+  }, [currentSong]);
+
   useEffect(() => {
 
     if("Notification" in window){
@@ -83,15 +97,24 @@ function App() {
               if(permission === "granted"){
                   Subscribe();
               }
+              else{
+                Unsubscribe();
+              }
           })
       }
       else if(Notification.permission === "granted"){
           Subscribe();
+          console.log("already subscribed");
+      }
+      else{
+        Unsubscribe();
       }
     }
     else{
         console.log("Notification is not supported");
     }
+    
+    setIsDark(window?.localStorage?.getItem("mode") === 'true' ? true : false);
     
     window?.addEventListener('keydown', handleKeyPress, false);
 
@@ -107,7 +130,7 @@ function App() {
           <Playing.Provider value={playing}>
             <LoadAudio.Provider value={loadAudio}>
               <IsDark.Provider value={isDark}>
-                <SetIsDark.Provider value={setIsDark}>
+                <SetIsDark.Provider value={updateDark}>
                   <div className={`app-bg ${isDark ? "dark" : "light"}`}>
                     <Router>
                       <Routes>

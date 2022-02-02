@@ -15,25 +15,34 @@
 }
 
 .artist-card-image-container{
-    width: 120px;
-    height: 120px;
+    width: 150px;
+    height: 150px;
     margin: auto;
     overflow: hidden;
 }
 
 @media screen and (max-width: 524px) {
     .artist-card-image-container{
-        width: 100px;
-        height: 100px;
+        width: 120px;
+        height: 120px;
     }
 }
 
 .artist-card-image{
-    width: 100%;
-    height: 100%;
+    width: 80%;
+    height: 80%;
     border-radius: 50%;
     color: #eee;
     text-align: center;
+    vertical-align: middle;
+}
+
+.custom-card-items .artist-card-image.dark{
+    box-shadow: 0 0 10px #777;
+}
+
+.custom-card-items .artist-card-image.light{
+    box-shadow: 0 0 8px #000;
 }
 
 .card-text-container{
@@ -50,6 +59,7 @@
 .artist-name{
     color: rgb(64, 226, 0) !important;
     margin: 0;
+    padding-top: 0 !important;
     line-height: 1.5rem;
     white-space: nowrap;
     overflow: hidden;

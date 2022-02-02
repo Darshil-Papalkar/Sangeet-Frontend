@@ -25,10 +25,12 @@
 }
 
 .dark-card{
+    box-shadow: 0 0 5px #777;
     background-color: rgba(255, 255, 255, 0.06);
 }
 
 .light-card{
+    box-shadow: 0 0 5px #000;
     background-color: #ffffff;
 }
 
@@ -94,11 +96,20 @@
 }
 
 .artist-card-image{
-    width: 100%;
-    height: 100%;
+    width: 80%;
+    height: 80%;
     border-radius: 50%;
     color: #eee;
-    text-align: center;
+    margin: auto;
+    vertical-align: middle;
+}
+
+.custom-card-items .artist-card-image.dark{
+    box-shadow: 0 0 10px #777;
+}
+
+.custom-card-items .artist-card-image.light{
+    box-shadow: 0 0 8px #000;
 }
 
 .card-text-container{
@@ -123,6 +134,10 @@
     text-overflow: ellipsis;
     text-decoration: none;
     cursor: pointer;
+}
+
+.artist-name{
+    padding-top: 0 !important;
 }
 
 .hover-dark:hover{

@@ -30,14 +30,36 @@ export const Subscribe = async () => {
       applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
     });
     
-    const today = new Date().toISOString();
+    const existingEndPoint = window?.localStorage?.getItem("endpoint");
 
+    const today = new Date().toISOString();
+    
     await axios.post(apiLinks.subscribe, 
-            JSON.stringify({subscription: subscription, today: today}), {
-        headers: {
-            'content-type': 'application/json',
+        JSON.stringify({subscription: subscription, today: today, endpoint: existingEndPoint}), {
+            headers: {
+                'content-type': 'application/json',
+            }
+        });
+        
+    if(window.localStorage){
+        window.localStorage.setItem("endpoint", subscription.endpoint);
+    }
+};
+
+export const Unsubscribe = async () => {
+    if(window.localStorage){
+
+        const endpoint = window.localStorage.getItem("endpoint");
+        if(endpoint){
+            await axios.delete(apiLinks.unsubscribe, {
+                data: {
+                    endpoint: endpoint
+                }
+            });
+
+            window.localStorage.removeItem("endpoint");
         }
-    });
+    }
 };
 
 export const Broadcast = async () => {
