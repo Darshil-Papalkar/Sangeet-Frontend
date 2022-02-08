@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback, 
         forwardRef, useImperativeHandle, useContext } from "react";
-import { Container } from "reactstrap";
 import { Link } from "react-router-dom";
 import PauseIcon from '@mui/icons-material/Pause';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
@@ -53,17 +52,8 @@ const MusicPlayer = forwardRef((props, ref) => {
         return time;
     };
 
-    // const updateSongTime = (e) => {
-    //     console.log(e.target.value);
-    //     audioRef.current.currentTime = e.target.value;
-    //     setCurrentTime(e.target.value);
-    // };
-
     const updateBorderRef = useCallback(() => {
         setCurrentTime(audioRef.current.currentTime);
-        // const percent = (audioRef.current.currentTime / endTime * 100);
-        // borderRef.current.style.width = `${endTime === null ? 100 : percent}%`;
-
     }, []);
 
     const playPauseSong = () => {
@@ -198,7 +188,6 @@ const MusicPlayer = forwardRef((props, ref) => {
 
     return(
         <>
-
             <div className={`mt-2 bottom-navigation-container ${isDark ? "player-dark" : "player-light"}`}>
                 {/* <div ref={borderRef} className="top-one-row"/> */}
                 <Slider
@@ -216,6 +205,7 @@ const MusicPlayer = forwardRef((props, ref) => {
                     sx={{
                         color: 'rgb(64, 226, 0)',
                         height: 4,
+                        padding: '0 !important',
                         '& .MuiSlider-thumb': {
                         width: 15,
                         height: 15,
@@ -239,7 +229,7 @@ const MusicPlayer = forwardRef((props, ref) => {
                         opacity: 0.28,
                         },
                     }}
-                    />
+                />
                 <div className="custom-bottom-navigation" >
                     <div className={`timeline start ${isDark ? "dark-time" : "light-time"}`}>{calculateSongTime(currentTime)}</div>
                     <div className={`timeline end ${isDark ? "dark-time" : "light-time"}`}>{endTime !== Infinity ? calculateSongTime(endTime): '--:--'}</div>
@@ -318,7 +308,7 @@ const MusicPlayer = forwardRef((props, ref) => {
                     </div>
                 </div>
             </div>
-            <Container className="mt-3 pt-5 pb-5"/>
+            {/* <Container className="mt-3 pt-5 pb-5"/> */}
         </>
     );
 });

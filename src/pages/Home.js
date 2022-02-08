@@ -252,109 +252,113 @@ const Home = (props) => {
                 <React.Fragment />
             }
             <Navigation />
-            <Container key='category-container' fluid>
-                {list.categoryList ?  
-                    Object.keys(list.categoryList).map(catList => {
-                        let ll = [];
-                        if(catList === 'New Releases')
-                            ll = list.categoryList[catList].sort((a, b) => {
-                                let keyA = new Date(a.timeStamp);
-                                let keyB = new Date(b.timeStamp);
-                                if(keyA < keyB) return 1;
-                                else if(keyA > keyB) return -1;
-                                else return 0;
-                            });
-                        else
-                            ll = list.categoryList[catList];
+            <div className={`page-content ${isDark ? "dark" : "light"}`}
+                style={currentSong.id ? {height: "calc(100vh - 215px)"} : {height: "calc(100vh - 90px)"}}> 
+                <Container key='category-container' className="mt-3" fluid>
+                    {list.categoryList ?  
+                        Object.keys(list.categoryList).map(catList => {
+                            let ll = [];
+                            if(catList === 'New Releases')
+                                ll = list.categoryList[catList].sort((a, b) => {
+                                    let keyA = new Date(a.timeStamp);
+                                    let keyB = new Date(b.timeStamp);
+                                    if(keyA < keyB) return 1;
+                                    else if(keyA > keyB) return -1;
+                                    else return 0;
+                                });
+                            else
+                                ll = list.categoryList[catList];
 
-                        return (
-                            <Container key={catList} className=" mt-3 slider-container" fluid>
-                                <h2 className={`category-list-heading ${isDark ? "dark-heading" : "light-heading"}`} title={catList}>{catList}</h2>
-                                <Slider {...settings}>
-                                    {ll.map(item => {
-                                        return (
-                                            <div key={item.id} className={`mt-3 mb-3 custom-card-items song-list-items ${isDark ? "dark-card" : "light-card"}`}
-                                                onMouseEnter={() => setMouseId(item.id)}
-                                                onMouseLeave={() => setMouseId(0)}
-                                            >
-                                                <div className="card-image-container">
-                                                    
-                                                    <div className={`hide-hover-play-icon ${mouseId === item.id || item.id === currentSong.id ? 
-                                                                                                "show": null }`}
-                                                        title={`Play ${item.musicTitle}`}
-                                                    >
-                                                        {
-                                                            item.id === currentSong.id && playing ?
-                                                            <PauseIcon className="play-icon-image-overlay" onClick={handleStateChange} /> :
-                                                            <PlayArrowIcon className="play-icon-image-overlay" 
-                                                                onClick={(e) => item.id === currentSong.id ? handleStateChange(e): loadAudio(ll, item, e)}
-                                                            />  
-                                                        }
+                            return (
+                                <Container key={catList} className=" mt-3 slider-container" fluid>
+                                    <h2 className={`category-list-heading ${isDark ? "dark-heading" : "light-heading"}`} title={catList}>{catList}</h2>
+                                    <Slider {...settings}>
+                                        {ll.map(item => {
+                                            return (
+                                                <div key={item.id} className={`mt-3 mb-3 custom-card-items song-list-items ${isDark ? "dark-card" : "light-card"}`}
+                                                    onMouseEnter={() => setMouseId(item.id)}
+                                                    onMouseLeave={() => setMouseId(0)}
+                                                    onTouchStart={() => setMouseId(item.id)}                                                   
+                                                    onTouchEnd={() => setMouseId(item.id)}
+                                                >
+                                                    <div className="card-image-container">
+                                                        
+                                                        <div className={`hide-hover-play-icon ${mouseId === item.id || item.id === currentSong.id ? 
+                                                                                                    "show": null }`}
+                                                            title={`Play ${item.musicTitle}`}
+                                                        >
+                                                            {
+                                                                item.id === currentSong.id && playing ?
+                                                                <PauseIcon className="play-icon-image-overlay" onClick={handleStateChange} /> :
+                                                                <PlayArrowIcon className="play-icon-image-overlay" 
+                                                                    onClick={(e) => item.id === currentSong.id ? handleStateChange(e): loadAudio(ll, item, e)}
+                                                                />  
+                                                            }
+                                                        </div>
+                                        
+                                                        <img 
+                                                            src={apiLinks.getImage + item.musicImageKey} 
+                                                            alt={item.musicTitle} 
+                                                            className="card-image"
+                                                        />
                                                     </div>
-                                    
-                                                    <img 
-                                                        src={apiLinks.getImage + item.musicImageKey} 
-                                                        alt={item.musicTitle} 
-                                                        className="card-image"
-                                                    />
+                                                    <div className="card-text-container">
+                                                        <div className="card-text">
+                                                            <h5 className={`pt-3 song-name ${isDark ? "hover-dark" : "hover-light"}`} title={`Play ${item.musicTitle}`}>
+                                                                <span style={{cursor: "pointer"}} 
+                                                                    onClick={(e) => loadAudio(ll, item, e)} >
+                                                                    {item.musicTitle}
+                                                                </span>
+                                                            </h5>
+                                                            <h6 title={`Watch ${item.albumTitle}`} className={`album-title ${isDark ? "hover-dark" : "hover-light"}`}>
+                                                                <Link to={`/album/${item.albumTitle}`} className={`album-title ${isDark ? "hover-dark" : "hover-light"}`}>
+                                                                    {item.albumTitle}
+                                                                </Link>
+                                                            </h6>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div className="card-text-container">
-                                                    <div className="card-text">
-                                                        <h5 className={`pt-3 song-name ${isDark ? "hover-dark" : "hover-light"}`} title={`Play ${item.musicTitle}`}>
-                                                            <span style={{cursor: "pointer"}} 
-                                                                onClick={(e) => loadAudio(ll, item, e)} >
-                                                                {item.musicTitle}
-                                                            </span>
-                                                        </h5>
-                                                        <h6 title={`Watch ${item.albumTitle}`} className={`album-title ${isDark ? "hover-dark" : "hover-light"}`}>
-                                                            <Link to={`/album/${item.albumTitle}`} className={`album-title ${isDark ? "hover-dark" : "hover-light"}`}>
-                                                                {item.albumTitle}
-                                                            </Link>
-                                                        </h6>
-                                                    </div>
+                                            );
+                                        })}
+                                    </Slider>
+                                </Container>
+                            );
+                        })
+                    : <React.Fragment />
+                    }
+                </Container>
+                <Container key="artist-container" className="mt-5" fluid>
+                    { list.artistList ? 
+                        <Container className="slider-container" fluid>
+                            <h2 className={`category-list-heading ${isDark ? "dark-heading" : "light-heading"}`} title="Artists">Artists</h2>
+                            <Slider {...settings}>
+                            { Object.keys(list.artistList).map((artist, id) => {
+                                return (
+                                    <div key={id} className="mt-3 mb-3 custom-card-items">
+                                        <Link to={`/artist/${artist}`} className={`artist-name ${isDark ? "hover-dark" : "hover-light"}`}>
+                                            <div className="artist-card-image-container d-flex">
+                                                <img 
+                                                    src={apiLinks.getArtistImgFromName + artist} 
+                                                    alt={artist} 
+                                                    className={`artist-card-image ${isDark ? "dark" : "light"}`}
+                                                />
+                                            </div>
+                                            <div className="card-text-container mt-0">
+                                                <div className="card-text" style={{textAlign: "center"}}>
+                                                    <h4 className={`pt-3 pb-3 artist-name ${isDark ? "hover-dark" : "hover-light"}`} title={artist}>
+                                                            {artist}
+                                                    </h4>
                                                 </div>
                                             </div>
-                                        );
-                                    })}
-                                </Slider>
-                            </Container>
-                        );
-                    })
-                : <React.Fragment />
-                }
-            </Container>
-            <Container key="artist-container" className="mt-5" fluid>
-                { list.artistList ? 
-                    <Container className="slider-container" fluid>
-                        <h2 className={`category-list-heading ${isDark ? "dark-heading" : "light-heading"}`} title="Artists">Artists</h2>
-                        <Slider {...settings}>
-                        { Object.keys(list.artistList).map((artist, id) => {
-                            return (
-                                <div key={id} className="mt-3 mb-3 custom-card-items">
-                                    <div className="artist-card-image-container d-flex">
-                                        <img 
-                                            src={apiLinks.getArtistImgFromName + artist} 
-                                            alt={artist} 
-                                            className={`artist-card-image ${isDark ? "dark" : "light"}`}
-                                        />
+                                        </Link>
                                     </div>
-                                    <div className="card-text-container mt-0">
-                                        <div className="card-text" style={{textAlign: "center"}}>
-                                            <h4 className={`pt-3 pb-3 artist-name ${isDark ? "hover-dark" : "hover-light"}`} title={artist}>
-                                                <Link to={`/artist/${artist}`} className={`artist-name ${isDark ? "hover-dark" : "hover-light"}`}>
-                                                    {artist}
-                                                </Link>
-                                            </h4>
-                                        </div>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                        </Slider>
-                    </Container>
-                 : <React.Fragment /> }
-            </Container>
-            <Container className="pt-3 mt-5" fluid />
+                                );
+                            })}
+                            </Slider>
+                        </Container>
+                    : <React.Fragment /> }
+                </Container>
+            </div>
         </div>
     );
 };

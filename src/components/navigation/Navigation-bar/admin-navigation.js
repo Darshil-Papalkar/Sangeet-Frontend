@@ -1,13 +1,23 @@
+import axios from 'axios';
+import Menu from '@mui/material/Menu';
+import Badge from '@mui/material/Badge';
 import Switch from '@mui/material/Switch';
+import Tooltip from '@mui/material/Tooltip';
+import Divider from '@mui/material/Divider';
+import MenuItem from '@mui/material/MenuItem';
 import { styled } from '@mui/material/styles';
 import { useNavigate } from "react-router-dom";
-import React, { useState, useContext } from "react";
+import IconButton from '@mui/material/IconButton';
+import React, { useState, useContext, useEffect } from "react";
+import NotificationsIcon from '@mui/icons-material/Notifications';
 import { Navbar, NavItem, Nav, NavbarToggler, NavbarBrand, NavLink,
         Offcanvas, OffcanvasHeader, OffcanvasBody, Container } from "reactstrap";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faMusic, faBell, faSignInAlt } from "@fortawesome/free-solid-svg-icons";
+import { faHome, faMusic, faSignInAlt } from "@fortawesome/free-solid-svg-icons";
 
+import { Subscribe } from "../../../client";
 import { IsDark, SetIsDark } from "../../../App";
+import { apiLinks } from "../../../connection.config.js";
 
 import "./admin-navigation.css";
 
@@ -65,14 +75,57 @@ const AdminNavigation = (props) => {
     const setIsDark = useContext(SetIsDark);
 
     const [isOpen, setIsOpen] = useState(false);
+    const [notificationData, setNotificationData] = useState([]);
 
     const updateNavClick = () => {
         setIsOpen(prev => !prev);
     };
 
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const open = Boolean(anchorEl);
+
+    const getNotificationData = async () => {
+        if(window?.localStorage?.getItem("endpoint")){
+            const endpoint = window.localStorage.getItem("endpoint");
+            const response = await axios.get(apiLinks.getBroadcastNotifications, {
+                params: {
+                    endpoint: endpoint
+                }
+            });
+            if(response.data.code === 200){
+                setNotificationData(response.data.message);
+            }
+            else{
+                setNotificationData([]);
+            }
+        }
+        else{
+            Notification.requestPermission().then(permission => {
+                if(permission === "granted"){
+                    Subscribe();
+                }
+            }).catch(err => {
+                console.log(err);
+            });
+        }
+    };
+
+    const handleClick = async (event) => {
+        setAnchorEl(event.currentTarget);
+        await getNotificationData();
+    };
+    
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    useEffect(() => {
+        getNotificationData();
+    }, []);
+
     return(
         <>
-            <div className="mb-5 admin-Navigation-container">
+            <div className="admin-Navigation-container">
                 <Navbar
                     color={isDark ? "dark" : "light"}
                     dark={isDark}
@@ -86,7 +139,91 @@ const AdminNavigation = (props) => {
                             SANGEET
                         </div>
                     </NavbarBrand>
-                    <MaterialUISwitch sx={{ m: 1 }} checked={isDark} onClick={setIsDark} />
+                    <MaterialUISwitch checked={isDark} onClick={setIsDark} />
+
+                    <Tooltip title="Notifications">
+                        <IconButton
+                            sx={{
+                                marginRight: "15px"
+                            }}
+                            onClick={handleClick}
+                            size="small"
+                            aria-controls={open ? 'account-menu' : undefined}
+                            aria-haspopup="true"
+                            aria-expanded={open ? 'true' : undefined}
+                        >
+                            <Badge badgeContent={notificationData.length || '0'} className="notification-count" >
+                                <NotificationsIcon sx={{ fontSize: 30, color: isDark ? "rgb(0, 255, 0)" : "rgb(0, 0, 0)" }} />
+                            </Badge>
+                        </IconButton>
+                    </Tooltip>
+
+                    <Menu
+                        anchorEl={anchorEl}
+                        id="account-menu"
+                        open={open}
+                        onClose={handleClose}
+                        onClick={handleClose}
+                        PaperProps={{
+                            elevation: 0,
+                            className: `notification-message-container ${isDark ? "dark" : "light"}`,
+                            sx: {
+                                filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                                mt: 1.5,
+                                '& .MuiAvatar-root': {
+                                    width: 32,
+                                    height: 32,
+                                    ml: -0.5,
+                                    mr: 1,
+                                },
+                                '&:before': {
+                                    content: '""',
+                                    display: 'block',
+                                    position: 'absolute',
+                                    top: 0,
+                                    right: 0,
+                                    width: 10,
+                                    height: 10,
+                                    bgcolor: `${isDark ? "#0A0F18" : "#eee"}`,
+                                    transform: 'translateY(-50%) rotate(45deg)',
+                                    zIndex: 0,
+                                },
+                            },
+                        }}
+                        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                    >
+                        {
+                            notificationData.length > 0 ?
+                                notificationData.map(notification => 
+                                    <MenuItem key={notification.id} onClick={() => navigate(notification.url)}>
+                                        <div>
+                                            <div className="notification-row mb-2">
+                                                <div className="notification-image-container">
+                                                    <img className="notification-image"
+                                                        src={apiLinks.getImage + notification.image} alt={notification.title} />
+                                                </div>
+                                                <div className="notification-text-container">
+                                                    <div className="notification-title">
+                                                        {notification.title}
+                                                    </div>
+                                                    <div className="notification-body">
+                                                        {notification.body}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <Divider />
+                                        </div>
+                                    </MenuItem>
+                                ) : 
+                                <div className="no-notifications-container">
+                                    <h5 className="no-notifications">
+                                        No Notifications Available
+                                    </h5>
+                                </div>
+                        }
+                    </Menu>
+
                     <NavbarToggler className="me-2" onClick={updateNavClick} />
                     
                     <Offcanvas isOpen={isOpen} className="offcanvas-tag" scrollable={false}
@@ -106,14 +243,14 @@ const AdminNavigation = (props) => {
                                             <span className="extra-spacing" /> Playlists
                                     </NavLink>
                                 </NavItem>
-                                <NavItem className="navbar-item">
+                                {/* <NavItem className="navbar-item">
                                     <NavLink className="navbar-item-link">
                                         <FontAwesomeIcon icon={faBell} /> 
                                             <span className="extra-spacing" /> Notifications
                                     </NavLink>
-                                </NavItem>
+                                </NavItem> */}
                                 <NavItem className="navbar-item">
-                                    <NavLink className="navbar-item-link">
+                                    <NavLink className="navbar-item-link" onClick={() => navigate('/admin')}>
                                         <FontAwesomeIcon icon={faSignInAlt} /> 
                                             <span className="extra-spacing" /> Login / SignUp 
                                     </NavLink>

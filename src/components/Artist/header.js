@@ -15,7 +15,7 @@ const Header = (props) => {
 
     return (
         <React.Fragment>
-            <Container>
+            <Container className="mt-3">
                 <div className="album-container">
                     <div className={`album-image-container ${isDark ? "dark" : "light"}`}>
                         <img 

@@ -22,6 +22,133 @@
     padding: 0.25rem .5rem;
 }
 
+.notification-count{
+    cursor: pointer;
+}
+
+.notification-count > span{
+    background-color: rgb(255, 0, 0);
+    color: #fff;
+}
+
+.notification-message-container{
+    top: 50px !important;
+    height: 40vh;
+    overflow: hidden auto;
+}
+
+.notification-message-container.dark{
+    background: #0A0F18;
+    color: #eee;
+}
+
+.notification-message-container.light{
+    background: #eee;
+    color: #0A0F18;
+}
+
+.notification-message-container.dark::-webkit-scrollbar{
+    background: #0A0F18;
+}
+
+.notification-message-container.light::-webkit-scrollbar{
+    background: #eee;
+}
+
+.notification-message-container::-webkit-scrollbar{
+    width: .8rem;
+}
+
+.notification-message-container::-webkit-scrollbar-track{
+    background: #777;
+    border-radius: 100vw;
+    margin-block: 2rem;
+}
+
+.notification-message-container::-webkit-scrollbar-thumb{
+    background: rgb(64, 226, 0);
+    border: .15em solid #777;
+    border-radius: 100vw;
+}
+
+@supports (scrollbar-color: red blue){
+    .notification-message-container{
+        scrollbar-width: thin;
+    }
+
+    .notification-message-container.dark{
+        scrollbar-color: rgb(64, 226, 0) #0A0F18 ;
+    }
+
+    .notification-message-container.light{
+        scrollbar-color: rgb(64, 226, 0) #eee;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .notification-message-container::-webkit-scrollbar{
+        width: .2rem !important;
+    }
+
+    .notification-message-container::-webkit-scrollbar-thumb{
+        border: none !important;
+    }
+}
+
+.notification-row{
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    align-content: center;
+    gap: 1rem;
+
+}
+
+.notification-image-container{
+    height: 4rem;
+    width: 4rem;
+    overflow: hidden;
+    border-radius: 100%;
+}
+
+.notification-image{
+    height: 100%;
+    width: 100%;
+    border-radius: 100%;
+    object-fit: cover;
+}
+
+.notification-text-container > *{
+    width: calc(300px - 7rem);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.notification-title{
+    font-size: 1rem;
+}
+
+.notification-body{
+    font-size: .8rem;
+}
+
+ul.MuiMenu-list{
+    height: 100%;
+}
+
+.no-notifications-container{
+    display: flex;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    align-content: center;
+    flex-wrap: nowrap;
+    flex-direction: row;
+}
+
 .navbar-item{
     text-align: left;
 }

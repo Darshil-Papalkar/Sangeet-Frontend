@@ -9,13 +9,14 @@ export function register(){
             registration.addEventListener('updatefound', function() {
               // If updatefound is fired, it means that there's
               // a new service worker being installed.
-              const _ = registration.installing;
-            //   console.log('A new service worker is being installed:',
-            //     installingWorker);
+              const installingWorker = registration.installing;
+              console.log('A new service worker is being installed:',
+                installingWorker);
             });
-            // registration.addEventListener('pushsubscriptionchange', function(event) {
-            //     console.log(event);
-            // });
+
+            registration.addEventListener('pushsubscriptionchange', function(event) {
+                console.log("Pushsubscriptionchange", event);
+            });
         })
         .catch(function(error) {
             console.log('Service worker registration failed:', error);

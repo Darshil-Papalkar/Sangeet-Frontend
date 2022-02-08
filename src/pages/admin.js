@@ -12,18 +12,20 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import CategoryIcon from '@mui/icons-material/Category';
 import DomainIcon from '@mui/icons-material/Domain';
+import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import CellTowerIcon from '@mui/icons-material/CellTower';
 
-import * as serviceWorker from "../client/index";
 import AddNewModal from '../components/Admin/addNewModal';
 import NewMusicAdd from '../components/Admin/newMusicAdd';
 
 import GenreTable from '../components/Tables/Genre-table';
+import BroadcastTable from '../components/Tables/broadcast';
 import ArtistsTable from '../components/Tables/artists-table';
 import StickyHeadTable from "../components/Tables/music-table";
 import CategoryTable from '../components/Tables/category-table';
+import PlaylistTable from '../components/Tables/playlist-table';
 
-import { IsDark } from "../App";
+import { IsDark, PlayerContext } from "../App";
 import { apiLinks } from '../connection.config';
 import SpinnerGrow from "../components/spinner/spinner-grow";
 import { DeleteWarning } from '../components/Warning/Warning';
@@ -35,10 +37,12 @@ import AdminNavigation from '../components/navigation/Navigation-bar/admin-navig
 
 import "./admin.css";
 
-let genreRows = [], artistRows = [], categoryRows = [], musicRows = [];
+let genreRows = [], artistRows = [], categoryRows = [], 
+    musicRows = [], broadcastRows = [], playlistRows = [];
 
 const Admin = () => {
     const isDark = useContext(IsDark);
+    const currentSong = useContext(PlayerContext);
 
     const hiddenFileInput = useRef(null);
     const hiddenMusicInput = useRef(null);
@@ -64,11 +68,13 @@ const Admin = () => {
     const [artist, setArtist] = useState([]);
     const [category, setCategory] = useState([]);
 
+    const [showBroadCast, setShowBroadCast] = useState(false);
     const [addMusicWidget, setAddMusicWidget] = useState(false);
+    const [createPlaylist, setCreatePlaylist] = useState(false);
     const [addGenreWidget, setAddGenreWidget] = useState(false);
+    const [editMusicWidget, setEditMusicWidget] = useState(false);
     const [addArtistWidget, setAddArtistWidget] = useState(false);
     const [addCategoryWidget, setAddCategoryWidget] = useState(false);
-    const [editMusicWidget, setEditMusicWidget] = useState(false);
     const [editExistingWidget, setEditExistingWidget] = useState(false);
     
     const [fav, setFav] = useState(false);
@@ -83,7 +89,10 @@ const Admin = () => {
     const [musicImgName, setMusicImgName] = useState("");
     const [musicImgPath, setMusicImgPath] = useState('/assets/images/default-music-upload-image.png');
 
-    const updateTabId = (id) => setTabId(id);
+    const updateTabId = (id) => {
+        setTabId(id);
+        window?.localStorage?.setItem("tabId", id);
+    };
 
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -91,24 +100,36 @@ const Admin = () => {
     const updateAddMusicWidget = () => {
         removeMusicDetails();
         setAddMusicWidget(prev => !prev);
-    }
+    };
+
+    const broadCast = () => setShowBroadCast(prev => !prev);
+    const updateCreatePlaylist = () => setCreatePlaylist(prev => !prev);
+    const updateAddGenreWidget = () => setAddGenreWidget(prev => !prev);
     const updateEditMusicWidget = () => setEditMusicWidget(prev => !prev);
     const updateAddArtistWidget = () => setAddArtistWidget(prev => !prev);
-    const updateAddGenreWidget = () => setAddGenreWidget(prev => !prev);
     const updateAddCategoryWidget = () => setAddCategoryWidget(prev => !prev);
 
     const defaultProps = {
         options: rows,
-        getOptionLabel: (option) => option.musicTitle || option.name || option.type,
+        getOptionLabel: (option) => option.musicTitle || option.name || option.type || option.title || option.playlist_name,
     };
     
     
     useEffect(() => {
 
+        if(window?.localStorage){
+            const id = window?.localStorage?.getItem("tabId");
+            if(id && 0 < id < 7){
+                setTabId(parseInt(id));
+            }
+        }
+
         let musicController = new AbortController();
         let artistController = new AbortController();
         let genreController = new AbortController();
         let categoryController = new AbortController();
+        let broadCastController = new AbortController();
+        let playlistController = new AbortController();
         
         const getMusicData = async () => {
     
@@ -129,7 +150,7 @@ const Admin = () => {
             }
             catch(err){
                 console.log(err);
-                Error(err.message);
+                // Error(err.message);
                 setRows([]);
             }
             finally{
@@ -214,14 +235,69 @@ const Admin = () => {
             }
         };
 
+        const getBroadCastData = async () => {
+            try{
+                setLoader(true);
+                const response = await axios.get(apiLinks.getBroadcast, {
+                    signal: broadCastController.signal,
+                });
+                if(response.data?.code === 200){
+                    setRows(response.data.message);
+                    broadcastRows = response.data.message;
+                }
+                else{
+                    Error(response.data.message);
+                    setRows([]);
+                }
+            }
+            catch(err){
+                console.log(err);
+                Error(err.message);
+                setRows([]);
+            }
+            finally{
+                setLoader(false);
+            }
+        };
+
+        const getPlaylistData = async () => {
+            
+            try{
+                setLoader(true);
+                const response = await axios.get(apiLinks.getAllPlaylist, {
+                    signal: playlistController.signal,
+                });
+                if(response.data?.code === 200){
+                    setRows(response.data.message);
+                    playlistRows = response.data.message;
+                }
+                else{
+                    Error(response.data.message);
+                    setRows([]);
+                }
+            }
+            catch(err){
+                console.log(err);
+                Error(err.message);
+                setRows([]);
+            }
+            finally{
+                setLoader(false);
+            }
+        };
+
         if(tabId === 1) 
             getMusicData();
         else if(tabId === 2) 
             getArtistsData();
         else if(tabId === 3) 
             getGenreData();
-        else 
+        else if(tabId === 4)
             getCategoryData();
+        else if(tabId === 5)
+            getBroadCastData();
+        else
+            getPlaylistData();
 
         return () => {
             musicController?.abort();
@@ -245,8 +321,14 @@ const Admin = () => {
             else if(tabId === 3){
                 searchedData = genreRows.filter(row => row.id === value.id);
             }
-            else{
+            else if(tabId === 4){
                 searchedData = categoryRows.filter(row => row.id === value.id);
+            }
+            else if(tabId === 5){
+                searchedData = broadcastRows.filter(row => row.id === value.id);
+            }
+            else if(tabId === 6){
+                searchedData = playlistRows.filter(row => row.id === value.id);
             }
             setRows(searchedData);
         }
@@ -260,8 +342,14 @@ const Admin = () => {
             else if(tabId === 3){
                 setRows(genreRows);
             }
-            else{
+            else if(tabId === 4){
                 setRows(categoryRows);
+            }
+            else if(tabId === 5){
+                setRows(broadcastRows);
+            }
+            else if(tabId === 6){
+                setRows(playlistRows);
             }
         }
     };
@@ -279,8 +367,14 @@ const Admin = () => {
             else if(tabId === 3){
                 searchedData = genreRows.filter(row => row.type.toLowerCase().includes(data.toLowerCase()));
             }
-            else{
+            else if(tabId === 4){
                 searchedData = categoryRows.filter(row => row.type.toLowerCase().includes(data.toLowerCase()));
+            }
+            else if(tabId === 5){
+                searchedData = broadcastRows.filter(row => row.title.toLowerCase().includes(data.toLowerCase()));
+            }
+            else if(tabId === 6){
+                searchedData = playlistRows.filter(row => row['playlist_name'].toLowerCase().includes(data.toLowerCase()));
             }
             setRows(searchedData);
         }
@@ -294,8 +388,14 @@ const Admin = () => {
             else if(tabId === 3){
                 setRows(genreRows);
             }
-            else{
+            else if(tabId === 4){
                 setRows(categoryRows);
+            }
+            else if(tabId === 5){
+                setRows(broadcastRows);
+            }
+            else if(tabId === 6){
+                setRows(playlistRows);
             }
         }
     };
@@ -344,11 +444,11 @@ const Admin = () => {
         );
     };
     
-    const handleClick = (event) => {
+    const handleClick = () => {
         hiddenFileInput.current.click();
     };
 
-    const handleMusicClick = (event) => {
+    const handleMusicClick = () => {
         hiddenMusicInput.current.click();
     };
     
@@ -470,16 +570,15 @@ const Admin = () => {
         setEditMusicWidget(true);
     };
 
-    const editArtistGenreCategory = (id, domain="") => {
+    const editArtistGenreCategoryPlaylist = (id, domain="") => {
 
         const editTableRow = rows.filter(entry => entry.id === id);
-        // console.log(editTableRow);
 
         if(editTableRow.length){
             setFav(editTableRow[0].show);
             setEditId(id);
             setEditExistingWidget(prev => !prev);
-            setCatGenValue(editTableRow[0].name || editTableRow[0].type);
+            setCatGenValue(editTableRow[0].name || editTableRow[0].type || editTableRow[0].playlist_name);
 
             if(domain === "artist"){
                 setHeader('Edit Artist');
@@ -492,6 +591,10 @@ const Admin = () => {
             else if(domain === 'category'){
                 setHeader("Edit Category");
                 setModalId('3');
+            }
+            else if(domain === 'playlist'){
+                setHeader("Edit Playlist");
+                setModalId('4');
             }
             else{
                 Error("Domain Not Valid for Edit");
@@ -518,9 +621,13 @@ const Admin = () => {
         else if(id && tabId === 4){
             setDeleteItemName(name[0].type);
         }
-        else{
-            setDeleteItemName("");
+        else if(id && tabId === 5){
+            setDeleteItemName(name[0].title);
         }
+        else if(id && tabId === 6){
+            setDeleteItemName(name[0]['playlist_name'])
+        }
+
         setDeleteId(id);
         setWarning(prev => !prev);
     };
@@ -543,8 +650,29 @@ const Admin = () => {
             else if(tabId === 4){
                 response = await axios.delete(apiLinks.deleteCategory+id);
             }
+            else if(tabId === 5){
+                response = await axios.delete(apiLinks.deleteBroadcast+id);
+            }
+            else if(tabId === 6){
+                response = await axios.delete(apiLinks.deletePlaylist+id);
+            }
 
-            if(response.data && response.data.code === 200){
+            if(response?.data?.code === 200){
+                // if(tabId === 1){
+                //     musicRows = rows.filter(row => row.id !== id);
+                // }
+                // else if(tabId === 2){
+                //     artistRows = rows.filter(row => row.id !== id);
+                // }
+                // else if(tabId === 3){
+                //     genreRows = rows.filter(row => row.id !== id);
+                // }
+                // else if(tabId === 4){
+                //     categoryRows = rows.filter(row => row.id !== id);
+                // }
+                // else if(tabId === 5){
+                //     broadcastRows = rows.filter(row => row.id !== id);
+                // }
                 setRows(prev => prev.filter(row => row.id !== id));
                 Success(response.data.message);
             }
@@ -561,17 +689,14 @@ const Admin = () => {
             toggleWarning();
         }
     };
-
-    const broadCast = () => {
-        serviceWorker.Broadcast();
-    };
     
     const actions = [
+        { icon: <CellTowerIcon />, name: "BroadCast", click: broadCast }, 
+        { icon: <DomainIcon />, name: 'Add Genre', click: updateAddGenreWidget },
         { icon: <MusicNoteIcon />, name: 'Add Song', click: updateAddMusicWidget },
         { icon: <PersonAddIcon />, name: 'Add Artist', click: updateAddArtistWidget },
-        { icon: <DomainIcon />, name: 'Add Genre', click: updateAddGenreWidget },
         { icon: <CategoryIcon />, name: 'Add Category', click: updateAddCategoryWidget },
-        { icon: <CellTowerIcon />, name: "BroadCast", click: broadCast }, 
+        { icon: <PlaylistAddIcon />, name: "Create Playlist", click: updateCreatePlaylist },
     ];
 
     return (
@@ -674,40 +799,58 @@ const Admin = () => {
 
                 {addArtistWidget ? 
                     <AddNewModal 
-                        header="Add New Artist"
-                        toggle={setAddArtistWidget}
-                        setRows={setRows}
-                        artistRows={artistRows}
-                        tabId={tabId}
-                        updateTabId={updateTabId}
                         id='1'
+                        tabId={tabId}
+                        header="Add New Artist"
+                        artistRows={artistRows}
+                        toggle={setAddArtistWidget}
                     /> :
                     <React.Fragment />
                 }
                 
                 {addGenreWidget ? 
                     <AddNewModal 
+                        id='2'
+                        tabId={tabId}
+                        genreRows={genreRows}
                         header="Add New Genre"
                         toggle={setAddGenreWidget}
-                        setRows={setRows}
-                        genreRows={genreRows}
-                        tabId={tabId}
-                        updateTabId={updateTabId}
-                        id='2'
                     /> :
                     <React.Fragment />
                 }
                 
                 {addCategoryWidget ? 
                     <AddNewModal 
-                        header="Add New Category"
-                        toggle={setAddCategoryWidget}
-                        setRows={setRows}
-                        categoryRows={categoryRows}
-                        tabId={tabId}
-                        updateTabId={updateTabId}
                         id='3'
+                        tabId={tabId}
+                        header="Add New Category"
+                        categoryRows={categoryRows}
+                        toggle={setAddCategoryWidget}
                     /> :
+                    <React.Fragment />
+                }
+
+                {
+                    showBroadCast ? 
+                    <AddNewModal 
+                        id='4'
+                        tabId={tabId}
+                        header="BroadCast News"
+                        toggle={setShowBroadCast}
+                        broadcastRows={broadcastRows}
+                    /> : 
+                    <React.Fragment />
+                }
+
+                {
+                    createPlaylist ? 
+                    <AddNewModal 
+                        id='5'
+                        tabId={tabId}
+                        header="Add New Playlist"
+                        toggle={setCreatePlaylist}
+                        playlistRows={playlistRows}
+                    /> : 
                     <React.Fragment />
                 }
 
@@ -715,7 +858,8 @@ const Admin = () => {
 
                 {/* <Container fluid>
                      */}
-                <Box className='add-button-speed-dial' sx={{ height: 300, transform: 'translateZ(0px)', flexGrow: 1 }}>
+                <Box className='add-button-speed-dial' sx={{ height: 300, transform: 'translateZ(0px)', 
+                        flexGrow: 1, bottom: `${currentSong.id ? "8rem" : ".5rem"}` }}>
                     <Backdrop open={open} />
                     <SpeedDial
                         ariaLabel="SpeedDial tooltip example"
@@ -737,10 +881,9 @@ const Admin = () => {
                         ))}
                     </SpeedDial>
                 </Box>
-
-                {/* </Container> */}
-                
-                <Container className='mb-3'>
+                <Container className={`page-content ${isDark ? "dark" : "light"} mb-3`}
+                    style={currentSong.id ? {height: "calc(100vh - 230px)"} : {height: "calc(100vh - 120px)"}}
+                >
                     <div>
                         <div className="d-flex navtabs-autocomplete">
                             <Nav tabs className="align-bottom-flex">
@@ -776,6 +919,22 @@ const Admin = () => {
                                         Category
                                     </NavLink>
                                 </NavItem>
+                                <NavItem>
+                                    <NavLink
+                                        className={`${tabId === 5 && "active"} admin-nav-table-link`}
+                                        onClick={() => updateTabId(5)}
+                                    >
+                                        BroadCasts
+                                    </NavLink>
+                                </NavItem>
+                                <NavItem>
+                                    <NavLink
+                                        className={`${tabId === 6 && "active"} admin-nav-table-link`}
+                                        onClick={() => updateTabId(6)}
+                                    >
+                                        Playlists
+                                    </NavLink>
+                                </NavItem>
                             </Nav>
                             <Autocomplete
                                 {...defaultProps}
@@ -788,7 +947,9 @@ const Admin = () => {
                                 <TextField {...params} label={  tabId === 1 ? "Search Music" : 
                                                                 tabId === 2 ? "Search Artist" : 
                                                                 tabId === 3 ? "Search Genre" : 
-                                                                "Search Category"} 
+                                                                tabId === 4 ? "Search Category":
+                                                                tabId === 5 ? "Search Title" : 
+                                                                "Search Playlist"} 
                                     className="input-div" variant="standard" 
                                     onChange={getSearchedRow}
                                     />
@@ -816,7 +977,7 @@ const Admin = () => {
                                             rows = {rows}
                                             setRows={setRows}
                                             toggleWarning={toggleWarning}
-                                            editArtist={editArtistGenreCategory}
+                                            editArtist={editArtistGenreCategoryPlaylist}
                                         />
                                     </Col>
                                 </Row>
@@ -828,7 +989,7 @@ const Admin = () => {
                                             rows = {rows}
                                             setRows={setRows}
                                             toggleWarning={toggleWarning}
-                                            editGenre={editArtistGenreCategory}
+                                            editGenre={editArtistGenreCategoryPlaylist}
                                         /> 
                                     </Col>
                                 </Row>
@@ -840,7 +1001,30 @@ const Admin = () => {
                                             rows = {rows}
                                             setRows={setRows}
                                             toggleWarning={toggleWarning}
-                                            editCategory={editArtistGenreCategory}
+                                            editCategory={editArtistGenreCategoryPlaylist}
+                                        />
+                                    </Col>
+                                </Row>
+                            </TabPane>
+                            <TabPane tabId={5}>
+                                <Row>
+                                    <Col>
+                                        <BroadcastTable 
+                                            rows = {rows}
+                                            setRows={setRows}
+                                            toggleWarning={toggleWarning}
+                                        />
+                                    </Col>
+                                </Row>
+                            </TabPane>
+                            <TabPane tabId={6}>
+                                <Row>
+                                    <Col>
+                                        <PlaylistTable 
+                                            rows={rows}
+                                            setRows={setRows}
+                                            toggleWarning={toggleWarning}
+                                            editPlaylist={editArtistGenreCategoryPlaylist}
                                         />
                                     </Col>
                                 </Row>

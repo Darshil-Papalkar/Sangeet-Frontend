@@ -6,6 +6,7 @@ import TextInput from './textInput';
 import NewImageUpload from './newImageUpload';
 import SpinnerGrow from '../spinner/spinner-grow';
 import { apiLinks } from '../../connection.config';
+import * as serviceWorker from "../../client/index";
 import { Error, Success } from '../Notification/Notification';
 
 const AddNewModal = (props) => {
@@ -14,7 +15,9 @@ const AddNewModal = (props) => {
 
     const [loader, setLoader] = useState(false);
 
+    const [url, setUrl] = useState('');
     const [name, setName] = useState('');
+    const [body, setBody] = useState('');
     const [checkBoxChecked, setCheckBoxChecked] = useState(false);
 
     const [artistImg, setArtistImg] = useState({});
@@ -42,8 +45,9 @@ const AddNewModal = (props) => {
     const setData = (response) => {
         if( (props.tabId === 2 && props.id === '1') ||
             (props.tabId === 3 && props.id === '2') ||
-            (props.tabId === 4 && props.id === '3')){
-                // props.setRows(prevData => [...prevData, ...(response.data.rowData)]);
+            (props.tabId === 4 && props.id === '3') ||
+            (props.tabId === 5 && props.id === '4') ||
+            (props.tabId === 6 && props.id === '5')){
                 if(props.tabId === 2){
                     props.artistRows.push(...(response.data.rowData));
                 }
@@ -53,14 +57,16 @@ const AddNewModal = (props) => {
                 else if(props.tabId === 4){
                     props.categoryRows.push(...(response.data.rowData));
                 }
+                else if(props.tabId === 5){
+                    props.broadcastRows.push(...(response.data.rowData));
+                }
+                else if(props.tabId === 6){
+                    props.playlistRows.push(...(response.data.rowData));
+                }
                 else{
                     Error("Unable to update search list by tabId");
                 }
             }
-        // else if(props.id === '1') props.updateTabId(2);
-        // else if(props.id === '2') props.updateTabId(3);
-        // else if(props.id === '3') props.updateTabId(4);
-        // else props.updateTabId(1);
     };
 
     const addDetail = async () => {
@@ -93,7 +99,7 @@ const AddNewModal = (props) => {
                     }
                 });
             }
-            else{
+            else if(props.id === "3"){
                 response = await axios.post(apiLinks.addCategory, {
                     types: names,
                     show: checkBoxChecked,
@@ -102,6 +108,24 @@ const AddNewModal = (props) => {
                     headers: {
                         "Content-Type": "application/json"
                     }
+                });
+            }
+            else if(props.id === '4'){
+                formData.append("url", url);
+                formData.append("body", body);
+                formData.append("title", name);
+                formData.append('image', artistImg[0]);
+
+                const today = new Date().toISOString();
+                formData.append("today", today);
+                
+                response = await serviceWorker.Broadcast(formData);
+            }
+            else{
+                formData.append("name", name);
+                formData.append('image', artistImg[0]);
+                response = await axios.post(apiLinks.createPlaylist, formData, {
+                    signal: controller.signal
                 });
             }
 
@@ -120,7 +144,6 @@ const AddNewModal = (props) => {
                     Error(response.data.message);
                 }
             }
-        
         }
         catch(err){
             console.log(err.message, err);
@@ -160,7 +183,7 @@ const AddNewModal = (props) => {
                     </span>
                 </ModalHeader>
                 <ModalBody>
-                    {props.id === '1' ? 
+                    {props.id === '1' || props.id === "4" || props.id === "5" ? 
                         <NewImageUpload 
                             musicImgName={artistImgName}
                             musicImgPath={artistImgPath}
@@ -174,14 +197,45 @@ const AddNewModal = (props) => {
                     <TextInput 
                         id={props.id}
                         required
-                        check={true}
-                        labelName={props.id === '1' ? "Add New Name" : "Add New Type"}
-                        label={props.id === '1' ? "Enter Artist Name" : "Enter Comma separated Types"}
+                        check={props.id === "4" ? false : true}
+                        labelName={props.id === "5" ? "Add New Playlist" : props.id === '4' ? "Add BroadCast Title" : 
+                                    props.id === "1" ? "Add New Name" : "Add New Type"}
+                        label={props.id === "5" ? "Add Playlist Name" : props.id === '4' ? "Add BroadCast Heading" : 
+                                    props.id === "1" ? "Enter Artist Name" : "Enter Comma separated Types"}
                         value={name}
                         onChange={setName}
                         checkedValue={checkBoxChecked}
                         onCheckBoxChange={setCheckBoxChecked}
                     />
+                    {
+                        props.id === '4' ? 
+                        <React.Fragment>
+                            <TextInput 
+                                id={props.id}
+                                required
+                                check={false}
+                                labelName="Add Broadcast Body"
+                                label="Add Broadcast Content"
+                                value={body}
+                                onChange={setBody}
+                                checkedValue={checkBoxChecked}
+                                onCheckBoxChange={setCheckBoxChecked}
+                            />
+                            <TextInput 
+                                id={props.id}
+                                required
+                                check={false}
+                                labelName="Add Broadcast Nav Link"
+                                label="Add Relative Link"
+                                value={url}
+                                onChange={setUrl}
+                                checkedValue={checkBoxChecked}
+                                onCheckBoxChange={setCheckBoxChecked}
+                            /> 
+                        </React.Fragment>
+                        : 
+                        <React.Fragment />
+                    }
                 </ModalBody>
                 <ModalFooter>
                     <Button

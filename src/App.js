@@ -104,7 +104,7 @@ function App() {
       }
       else if(Notification.permission === "granted"){
           Subscribe();
-          console.log("already subscribed");
+          // console.log("already subscribed");
       }
       else{
         Unsubscribe();

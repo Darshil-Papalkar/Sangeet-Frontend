@@ -3,6 +3,7 @@ import axios from "axios";
 import { apiLinks } from "../connection.config";
 
 const publicVapidKey = process.env.REACT_APP_PUBLIC_VAPID_KEY;
+
 const urlBase64ToUint8Array = (base64String) => {
     // console.log(base64String);
     const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -62,11 +63,7 @@ export const Unsubscribe = async () => {
     }
 };
 
-export const Broadcast = async () => {
-    await axios.get(apiLinks.broadcast, {
-        headers: {
-            'content-type': 'application/json',
-        },
-    });
+export const Broadcast = async (formData) => {
+    return await axios.post(apiLinks.broadcast, formData);
 };
 

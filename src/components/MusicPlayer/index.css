@@ -84,9 +84,9 @@
     }
 }
 
-/* .music-detail-box{
-    width: 200px;
-} */
+.music-detail-box{
+    width: 40vw;
+}
 
 .music-detail-box>*,
 .music-album>a{
@@ -96,6 +96,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    padding: .3rem;
 }
 
 .dark-link-hover:hover{
@@ -179,10 +180,6 @@ input[type=range][orient=vertical].volume-slider{
     .musicDetails{
         gap: 10px;
     }
-
-    .music-detail-box{
-        /* width: 100px; */
-    }
     
     .custom-button-group>svg{
         font-size: 1.8rem !important;
@@ -198,13 +195,16 @@ input[type=range][orient=vertical].volume-slider{
     }
 }
 
-@media screen and (max-width: 410px) {
+@media screen and (max-width: 370px) {
+    .music-detail-box{
+        width: 30vw;
+    }
+}
+
+@media screen and (max-width: 425px) {
 
     .custom-bottom-navigation{
         gap: 0;
     }
 
-    .music-detail-box{
-        width: 100px;
-    }
 }

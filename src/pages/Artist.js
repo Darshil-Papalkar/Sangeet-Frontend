@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useParams } from "react-router-dom";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 
 import Body from "../components/Artist/body";
 import Header from "../components/Artist/header";
@@ -9,6 +9,7 @@ import { apiLinks } from "../connection.config";
 import { Error } from "../components/Notification/Notification";
 import SpinnerGrow from "../components/spinner/spinner-grow";
 import Navigation from "../components/navigation/Navigation-bar/navigation";
+import { PlayerContext, IsDark } from "../App";
 
 import "./artist.css";
 
@@ -18,6 +19,9 @@ export const AlbumList = React.createContext();
 export const CalculateTimeContext = React.createContext();
 
 const Artist = (props) => {
+    const isDark = useContext(IsDark);
+    const currentSong = useContext(PlayerContext);
+
     const params = useParams();
 
     const [loader, setLoader] = useState(false);
@@ -89,17 +93,20 @@ const Artist = (props) => {
                 <React.Fragment />
             }
             <Navigation />
-            <CalculateTimeContext.Provider value={calculateSongTime}>
-                <SongList.Provider value={songList}>
-                    <Duration.Provider value={totalDuration}>
-                        <AlbumList.Provider value={albumList}>
-                            <Header artist={params.artistName} />
-                            <Body artist={params.artistName} />
-                            <Footer artist={params.artistName} />
-                        </AlbumList.Provider>
-                    </Duration.Provider>
-                </SongList.Provider>
-            </CalculateTimeContext.Provider>
+            <div className={`page-content ${isDark ? "dark" : "light"}`}
+                style={currentSong.id ? {height: "calc(100vh - 215px)"} : {height: "calc(100vh - 70px)"}}> 
+                <CalculateTimeContext.Provider value={calculateSongTime}>
+                    <SongList.Provider value={songList}>
+                        <Duration.Provider value={totalDuration}>
+                            <AlbumList.Provider value={albumList}>
+                                <Header artist={params.artistName} />
+                                <Body artist={params.artistName} />
+                                <Footer artist={params.artistName} />
+                            </AlbumList.Provider>
+                        </Duration.Provider>
+                    </SongList.Provider>
+                </CalculateTimeContext.Provider>
+            </div>
         </React.Fragment>
     );
 };

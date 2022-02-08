@@ -22,8 +22,10 @@ const EditExistingModal = (props) => {
             id: props.editId,
             type: name,
             name: name,
-            show: fav
+            show: fav,
+            'playlist_name': name,
         };
+
         const editedRow = props.rows.filter(item => item.id !== props.editId);
         props.setRows([data, ...editedRow]);
 
@@ -56,8 +58,15 @@ const EditExistingModal = (props) => {
                     }
                 });
             }
-            else{
+            else if(props.id === '3'){
                 response = await axios.put(apiLinks.updateAdminCategory+props.editId, formData, {
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                });
+            }
+            else{
+                response = await axios.put(apiLinks.updateAdminPlaylist+props.editId, formData, {
                     headers: {
                         "Content-Type": "application/json"
                     }
@@ -72,8 +81,7 @@ const EditExistingModal = (props) => {
             else{
                 if(response.data.code === 200){
                     Success(response.data.message);
-                    setData();
-                    
+                    setData();   
                 }
                 else{
                     Error(response.data.message);
@@ -96,16 +104,17 @@ const EditExistingModal = (props) => {
 
     useEffect(() => {
 
-        let imgFileController = new AbortController();
+        let artistImgFileController = new AbortController();
+        let playlistImgFileController = new AbortController();
 
-        const getImageFileKey = async () => {
+        const getArtistImageFileKey = async () => {
             try{
                 const response = await axios.get(apiLinks.getArtistImgKey+editId, {
-                    signal: imgFileController.signal
+                    signal: artistImgFileController.signal
                 });
                 if(response.data.code === 200){
                     setMusicImgKey(response.data.message.artistImgKey);
-                    imgFileController = null;
+                    artistImgFileController = null;
                 }
                 else{
                     Error(response.data.message);
@@ -117,11 +126,37 @@ const EditExistingModal = (props) => {
             }
         };
         
-        if(props.id === '1'){
-            getImageFileKey();
+        const getPlaylistImageFileKey = async () => {
+            try{
+                const response = await axios.get(apiLinks.getPlaylistImgKey+editId, {
+                    signal: playlistImgFileController.signal,
+                });
+                if(response.data.code === 200){
+                    setMusicImgKey(response.data.message.image);
+                    playlistImgFileController = null;
+                }
+                else{
+                    Error(response.data.message);
+                }
+            }
+            catch(err){
+                console.log("Error Occured", err.message);
+                Error(err.message);
+            }
+        };
+
+        if(props.id === "1"){
+            getArtistImageFileKey();
+        }
+
+        if(props.id === "4"){
+            getPlaylistImageFileKey();
         }
         
-        return () => imgFileController?.abort();
+        return () => {
+            artistImgFileController?.abort();
+            playlistImgFileController?.abort();
+        }
 
     }, [editId, props.id]);
 
@@ -147,7 +182,7 @@ const EditExistingModal = (props) => {
                     </span>
                 </ModalHeader>
                 <ModalBody>
-                    {props.id === '1' ? 
+                    {props.id === '1' || props.id === '4' ? 
                         <EditImageUpload 
                             imageKey = {musicImgKey}
                             musicImgName={`${name}`}
@@ -157,8 +192,8 @@ const EditExistingModal = (props) => {
                     <TextInput 
                         id={props.id}
                         required
-                        labelName={props.id === '1' ? "Edit Name" : "Edit Type"}
-                        label={props.id === '1' ? "Enter Artist Name" : "Enter Type"}
+                        labelName={props.id === '4' ? "Edit Playlist Name" : '1' ? "Edit Name" : "Edit Type"}
+                        label={props.id === '4' ? "Enter Playlist Name" : '1' ? "Enter Artist Name" : "Enter Type"}
                         value={name}
                         onChange={setName}
                         // check={true}

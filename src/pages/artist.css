@@ -1,0 +1,42 @@
+.page-content{
+    bottom: 0;
+    overflow-y: auto;
+}
+
+.page-content.dark::-webkit-scrollbar{
+    background: #0A0F18;
+}
+
+.page-content.light::-webkit-scrollbar{
+    background: #eee;
+}
+
+.page-content::-webkit-scrollbar{
+    width: .8rem;
+}
+
+.page-content::-webkit-scrollbar-track{
+    background: #777;
+    border-radius: 100vw;
+    margin-block: 2rem;
+}
+
+.page-content::-webkit-scrollbar-thumb{
+    background: rgb(64, 226, 0);
+    border: .15em solid #777;
+    border-radius: 100vw;
+}
+
+@supports (scrollbar-color: red blue){
+    .page-content{
+        scrollbar-width: thin;
+    }
+
+    .page-content.dark{
+        scrollbar-color: rgb(64, 226, 0) #0A0F18 ;
+    }
+
+    .page-content.light{
+        scrollbar-color: rgb(64, 226, 0) #eee;
+    }
+}

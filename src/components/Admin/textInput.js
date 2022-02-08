@@ -24,7 +24,7 @@ const TextInput = (props) => {
     return (
         <Row className='music-detail-fields'>
             <Col className="mt-1 mb-1" xs="5">
-                <Label className="label-styling" style={{justifyContent: "flex-end"}} for={props.id}>
+                <Label className="label-styling" style={{justifyContent: "center"}} for={props.id}>
                     {
                         props.required ? 
                         <>

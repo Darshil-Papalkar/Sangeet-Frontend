@@ -3,3 +3,7 @@ html, body{
   padding: 0 !important;
   box-sizing: border-box;
 }
+
+body{
+  overflow: hidden;
+}
