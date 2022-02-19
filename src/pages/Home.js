@@ -385,17 +385,17 @@ const Home = (props) => {
                     : Array.from(new Array(3)).map((item, index) => {
                         return (
                             <Container key={index} className=" mt-3 slider-container" fluid>
-                                <Skeleton animation='wave' variant="h1" width="30%" height="3rem" className="mb-3 mt-3" />
+                                <Skeleton sx={isDark ? {bgcolor: '#ffffff29'}: null} animation='wave' variant="h1" width="30%" height="3rem" className="mb-3 mt-3" />
                                 <Slider {...loaderSettings}>
                                     {
                                         Array.from(new Array(10)).map((dummy, idx) => {
                                             return (
                                                 <React.Fragment>
                                                     <div className="card-image-container">
-                                                        <Skeleton animation='wave' variant="rectangular" height="100%" className="card-image" />
+                                                        <Skeleton sx={isDark ? {bgcolor: '#ffffff29'}: null} animation='wave' variant="rectangular" height="100%" className="card-image" />
                                                     </div>
                                                     <div className="card-text-container">
-                                                        <Skeleton animation='wave' variant="text" className="card-text" />
+                                                        <Skeleton sx={isDark ? {bgcolor: '#ffffff29'}: null} animation='wave' variant="text" className="card-text" />
                                                     </div>
                                                 </React.Fragment>
                                             );
@@ -439,17 +439,17 @@ const Home = (props) => {
                     : Array.from(new Array(1)).map((item, index) => {
                         return (
                             <Container key={index} className=" mt-3 slider-container" fluid>
-                                <Skeleton animation='wave' variant="h1" width="30%" height="3rem" className="mb-3 mt-3" />
+                                <Skeleton sx={isDark ? {bgcolor: '#ffffff29'}: null} animation='wave' variant="h1" width="30%" height="3rem" className="mb-3 mt-3" />
                                 <Slider {...loaderSettings}>
                                     {
                                         Array.from(new Array(10)).map((dummy, idx) => {
                                             return (
                                                 <React.Fragment>
                                                     <div className="card-image-container">
-                                                        <Skeleton animation='wave' variant="circular" height="100px" width="100px" className="card-image" />
+                                                        <Skeleton sx={isDark ? {bgcolor: '#ffffff29'}: null} animation='wave' variant="circular" height="100px" width="100px" className="card-image" />
                                                     </div>
                                                     <div className="card-text-container">
-                                                        <Skeleton animation='wave' variant="text" className="card-text" />
+                                                        <Skeleton sx={isDark ? {bgcolor: '#ffffff29'}: null} animation='wave' variant="text" className="card-text" />
                                                     </div>
                                                 </React.Fragment>
                                             );
