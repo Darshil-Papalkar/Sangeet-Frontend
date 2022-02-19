@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import axios from 'axios';
 
@@ -10,11 +10,21 @@ import { Error, Success } from '../Notification/Notification';
 
 const EditExistingModal = (props) => {
 
+    const hiddenFileInput = useRef(null);
+
     const { editId, fav, setFav } = props;
 
     const [loader, setLoader] = useState(false);
     const [name, setName] = useState(props.value || '');
     const [musicImgKey, setMusicImgKey] = useState("");
+    
+    const [artistImg, setArtistImg] = useState({});
+    const [artistImgPath, setArtistPath] = useState('');
+    const [artistImgName, setArtistImgName] = useState('');
+  
+    const handleClick = () => {
+        hiddenFileInput.current.click();
+    };
 
     const setData = () => {
 
@@ -39,15 +49,23 @@ const EditExistingModal = (props) => {
             const formData = {
                 'type': names,
                 'name': names,
-                'show': fav
+                'show': fav,
+                'old': props.value,
             };
 
             let response = {};
 
             if(props.id === '1'){
+                const formData = new FormData();
+                formData.append("show", fav);
+                formData.append("name", name);
+                formData.append("old", props.value);
+                formData.append("musicImgKey", musicImgKey);
+                formData.append("artistImg", artistImg[0]);
+
                 response = await axios.put(apiLinks.updateAdminArtist+props.editId, formData, {
                     headers: {
-                        "Content-Type": "application/json"
+                        "Content-Type": "multipart/form-data"
                     }
                 });
             }
@@ -86,7 +104,7 @@ const EditExistingModal = (props) => {
                 else{
                     Error(response.data.message);
                 }
-                props.toggle(false);
+                // props.toggle(false);
             }
         
         }
@@ -95,6 +113,14 @@ const EditExistingModal = (props) => {
         }
         finally{
             setLoader(false);
+        }
+    };
+
+    const uploadArtistImage = (event) => {
+        if(event.target.files[0]){
+            setArtistImg(event.target.files);
+            setArtistImgName(event.target.files[0].name);
+            setArtistPath(URL.createObjectURL(event.target.files[0]));
         }
     };
 
@@ -186,6 +212,11 @@ const EditExistingModal = (props) => {
                         <EditImageUpload 
                             imageKey = {musicImgKey}
                             musicImgName={`${name}`}
+                            handleClick={handleClick}
+                            musicImgPath={artistImgPath}
+                            artistImgName={artistImgName}
+                            hiddenFileInput={hiddenFileInput}
+                            uploadMusicImage={uploadArtistImage}
                         /> : 
                         <React.Fragment />
                     }

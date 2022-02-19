@@ -1,15 +1,18 @@
 import { Container } from "reactstrap";
 import React, { useContext } from "react";
 import CircleIcon from '@mui/icons-material/Circle';
+import PlayCircleFilledIcon from '@mui/icons-material/PlayCircleFilled';
 
-import { IsDark } from "../../App";
+import { IsDark, LoadAudio } from "../../App";
 import { apiLinks } from "../../connection.config";
-import { CalculateTimeContext, Duration } from "../../pages/Artist";
+import { CalculateTimeContext, Duration, SongList } from "../../pages/Artist";
 
 import "./header.css";
 
 const Header = (props) => {
     const isDark = useContext(IsDark);
+    const songList = useContext(SongList);
+    const loadAudio = useContext(LoadAudio);
     const totalDuration = useContext(Duration);
     const calculateTotalDuration = useContext(CalculateTimeContext);
 
@@ -34,6 +37,12 @@ const Header = (props) => {
                             Duration&nbsp;<CircleIcon style={{ fontSize: '.5rem' }} />&nbsp;{ calculateTotalDuration(totalDuration) }
                         </div>
                     </div>
+
+                    <PlayCircleFilledIcon 
+                        className={`artist-play-button ${isDark ? "dark" : "light"}`} 
+                        onClick={(e) => loadAudio(songList, songList[0], e)}
+                    />
+
                 </div>
             </Container>
         </React.Fragment>

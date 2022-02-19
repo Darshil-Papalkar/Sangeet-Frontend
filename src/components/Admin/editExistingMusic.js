@@ -1,8 +1,9 @@
 import axios from 'axios';
+import EditIcon from '@mui/icons-material/Edit';
 import React, { useState, useEffect, useRef } from 'react';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
-import PauseCircleIcon from '@mui/icons-material/PauseCircle';
 import StopCircleIcon from '@mui/icons-material/StopCircle';
+import PauseCircleIcon from '@mui/icons-material/PauseCircle';
 import LibraryMusicIcon from '@mui/icons-material/LibraryMusic';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Row, Col } from 'reactstrap';
 
@@ -25,16 +26,9 @@ const MenuProps = {
     },
 };
 
-// let audioRef;
-
 const EditExistingMusic = (props) => {
     
     const audioRef = useRef();
-    // const rangeRef = useRef();
-    // const animationRef = useRef();
-
-    // const [endTime, setEndTime] = useState(0);
-    // const [currentTime, setCurrentTime] = useState(0);
 
     const [load, setLoad] = useState(false);
     const [playing, setPlaying] = useState(false);
@@ -43,31 +37,34 @@ const EditExistingMusic = (props) => {
     const [musicKey, setMusicKey] = useState("");
     const [musicImgKey, setMusicImgKey] = useState("");
 
-    const {genre, category, artist, musicTitle, albumTitle, editMusicWidget, editId,
-            handleChange,  setMusicTitle, setLoader, updateRow, fav, setFav,
-            setAlbumTitle, handleGenreChange, handleCategoryChange, 
-            updateEditMusicWidget } = props;
+    const {genre, category, artist, musicTitle, albumTitle, editMusicWidget, editId, hiddenMusicInput,
+            handleChange,  setMusicTitle, setLoader, updateRow, fav, setFav, uploadMusic, musicName, 
+            setAlbumTitle, handleGenreChange, handleCategoryChange, handleMusicClick, musicPath, 
+            updateEditMusicWidget, hiddenFileInput, musicDuration } = props;
 
     const [genreList, setGenreList] = useState([]);
     const [artistList, setArtistList] = useState([]);
     const [categoryList, setCategoryList] = useState([]);
     
+    const [artistImg, setArtistImg] = useState({});
+    const [artistImgPath, setArtistPath] = useState('');
+    const [artistImgName, setArtistImgName] = useState('');
+  
     const closeWidget = () => {
-        // cancelAnimationFrame(animationRef.current);
         updateEditMusicWidget();
     };
 
-    // const calculateTime = (time) => {
-    //     if(time !== Infinity){
-    //         const minutes = Math.floor(time/60);
-    //         const returnMinutes = minutes >= 10 ? `${minutes}` : `0${minutes}`;
-    
-    //         const seconds = Math.floor(time%60);
-    //         const returnSeconds = seconds >= 10 ? `${seconds}` : `0${seconds}`;
-    
-    //         return `${returnMinutes}:${returnSeconds}`;
-    //     }
-    // };
+    const handleClick = () => {
+        hiddenFileInput.current.click();
+    };
+
+    const uploadArtistImage = (event) => {
+        if(event.target.files[0]){
+            setArtistImg(event.target.files);
+            setArtistImgName(event.target.files[0].name);
+            setArtistPath(URL.createObjectURL(event.target.files[0]));
+        }
+    };
 
     const stopSong = () => {
         
@@ -88,18 +85,18 @@ const EditExistingMusic = (props) => {
     };
 
     const updateSongState = async () => {
+        if(musicPath.length){
+            audioRef.current.src = URL.createObjectURL(musicPath[0]);
+        }
         setPlaying(prev => !prev);
         if(playing === false){
             try{
                 setLoad(true);
-                // src={musicKey && (apiLinks.getAudio + musicKey)}
-                // audioRef.current.src = apiLinks.getAudio + musicKey;
                 audioRef.current.play();
                 audioRef.current.onended = () => {
                     setCurrentPaused(prev => !prev);
                     setPlaying(prev => !prev);
                 }
-                // animationRef.current = requestAnimationFrame(whilePlaying);
             }
             catch(err){
                 console.log("Error Occured while fetching audio", err);
@@ -109,11 +106,6 @@ const EditExistingMusic = (props) => {
 
                 if(audioRef.current){
                     audioRef.current.oncanplaythrough  = () => {
-                        console.log(audioRef.current.duration);
-                        
-                        // const secs = Math.floor(audioRef.current.duration);
-                        // rangeRef.current.max = secs;
-                        // setEndTime(secs);
                         setLoad(false);
                     }
 
@@ -125,9 +117,7 @@ const EditExistingMusic = (props) => {
         }
         else{
             audioRef.current.pause();
-            // cancelAnimationFrame(animationRef.current);
         }
-
     };
 
     const saveEditFile = async () => {
@@ -136,15 +126,18 @@ const EditExistingMusic = (props) => {
             setLoader(true);
             
             const today = new Date().toISOString();
-            const formData = {
-                "musicTitle": musicTitle,
-                "albumTitle": albumTitle,
-                "artist": JSON.stringify(artist),
-                "genre": JSON.stringify(genre),
-                "category": JSON.stringify(category),
-                "date": today,
-                "show": fav
-            };
+
+            const formData = new FormData();
+            formData.append("show", fav);
+            formData.append("date", today);
+            formData.append("musicTitle", musicTitle);
+            formData.append("albumTitle", albumTitle);
+            formData.append("songImage", artistImg[0]);
+            formData.append("musicFile", musicPath[0]);
+            formData.append("duration", musicDuration);
+            formData.append("genre", JSON.stringify(genre));
+            formData.append("artist", JSON.stringify(artist));
+            formData.append("category", JSON.stringify(category));
 
             const response = await axios.put(apiLinks.updateAdminData+editId, formData, {
                 headers: {
@@ -160,7 +153,6 @@ const EditExistingMusic = (props) => {
                 Error(response.data.message);
             }
 
-            // console.log(response.data);
         }
         catch(err){
             console.log("An Error Occured while updating data", err);
@@ -172,33 +164,6 @@ const EditExistingMusic = (props) => {
         }
 
     };
-
-    // const changePlayerCurrentTime = () => {
-    //     rangeRef.current.style.setProperty('--seek-before-width', `${(Number(rangeRef.current.value) / endTime) * 100}%`);
-    //     setCurrentTime(rangeRef.current.value);
-    // };
-
-    // const changeRange = async (event) => {
-    //     try{
-    //         rangeRef.current.value = event.target.value;     
-    //         audioRef.current.src = apiLinks.getAudio + musicKey;
-    //         audioRef.current.play();
-    //         audioRef.current.addEventListener('canplay', () => {
-    //             audioRef.current.currentTime = parseInt(event.target.value);
-    //         });
-    //         changePlayerCurrentTime();
-    //     }
-    //     catch(err){
-    //         console.log("An Error Occured", err.message);
-    //     }
-    // };
-
-    // const whilePlaying = () => {
-        // rangeRef.current.value = audioRef.current.currentTime;
-        // changePlayerCurrentTime();
-        // animationRef.current = requestAnimationFrame(whilePlaying);
-
-    // };
 
     useEffect(() => {
 
@@ -403,8 +368,8 @@ const EditExistingMusic = (props) => {
                             <Row>
                                 <div className='music-upload-button'>
                                     <div className='music-upload-detail'>
-                                        <span className='music-image-title' style={{textAlign: "center"}}>
-                                            <LibraryMusicIcon /> &ensp; " {props.musicTitle+".mp3"} "
+                                        <span className='music-image-title' style={{textAlign: "center", flexDirection: "row"}}>
+                                            <LibraryMusicIcon /> &ensp; " {musicName || musicTitle+".mp3"} "
                                             <span 
                                                 className='pl-3 existing-music-play-container' 
                                             >
@@ -429,28 +394,48 @@ const EditExistingMusic = (props) => {
                                                         <PlayCircleIcon title="Play this Song" onClick={updateSongState} />
                                                 }
                                             </span>
+                                            <div className='music-upload-button'>
+                                                <div className='music-upload-detail d-flex justify-content-center align-items-center'>
+                                                    <div className='music-upload-detail'>
+                                                        <input 
+                                                            type="file" 
+                                                            accept='audio/*'
+                                                            onChange={uploadMusic} 
+                                                            ref={hiddenMusicInput}
+                                                            style={{display: "none"}}
+                                                        />
+                                                        <Button 
+                                                            onClick={handleMusicClick}
+                                                            color='dark'
+                                                            outline={true}
+                                                            style={{
+                                                                padding: "2px 6px",
+                                                                display: "flex",
+                                                            }}
+                                                        >
+                                                            <EditIcon title="Edit Image" />
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </span>
                                     </div>
                                     <div className='audio-duration'>
                                         <audio ref={audioRef} 
-                                            src={musicKey && (apiLinks.getAudio + musicKey)}
+                                            src={(musicKey && (apiLinks.getAudio + musicKey))}
                                         />
-                                        {/* <span className='durationTimer'>{calculateTime(currentTime)}</span>
-                                        <input 
-                                            type="range" 
-                                            ref={rangeRef} 
-                                            defaultValue={0}
-                                            // onChange={changeRange} 
-                                            className='admin-audio-progressBar'
-                                        />
-                                        <span className='durationTimer'>{!isNaN(endTime) && calculateTime(endTime)}</span> */}
                                     </div>
                                 </div>
                             </Row>
 
                             <EditImageUpload 
                                 imageKey = {musicImgKey}
-                                musicImgName={musicTitle}
+                                handleClick={handleClick}
+                                musicImgPath={artistImgPath}
+                                artistImgName={artistImgName}
+                                musicImgName={`${musicTitle}`}
+                                hiddenFileInput={hiddenFileInput}
+                                uploadMusicImage={uploadArtistImage}
                             />
 
                         </Col>

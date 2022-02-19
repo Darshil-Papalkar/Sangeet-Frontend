@@ -1,4 +1,5 @@
 .album-container{
+    position: relative;
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -59,3 +60,26 @@
         line-height: 2.4rem;
     }
 }
+
+.artist-play-button.light{
+    background-color: #eee;
+}
+
+.artist-play-button.dark{
+    background-color: #0A0F18;
+}
+
+.album-container .artist-play-button{
+    color:rgb(64, 226, 0);
+    cursor: pointer;
+    font-size: 3rem ;
+    position: absolute;
+    right: 2px;
+    bottom: -20px;
+}
+
+.artist-play-button:hover{
+    color:rgb(31, 104, 2);
+}
+
+

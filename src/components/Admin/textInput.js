@@ -24,7 +24,7 @@ const TextInput = (props) => {
     return (
         <Row className='music-detail-fields'>
             <Col className="mt-1 mb-1" xs="5">
-                <Label className="label-styling" style={{justifyContent: "center"}} for={props.id}>
+                <Label className="label-styling" style={{justifyContent: "flex-end"}} for={props.id}>
                     {
                         props.required ? 
                         <>
@@ -34,7 +34,7 @@ const TextInput = (props) => {
                     }
                 </Label>
             </Col>
-            <Col className="mt-1 mb-1" xs={props.check ? "6" : "7"}>
+            <Col className="mt-1 mb-1" xs={props.check ? "5" : "6"}>
                 <TextField 
                     value={props.value}
                     onChange={onValueChange}

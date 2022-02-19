@@ -55,6 +55,20 @@
     width: 100%;
 }
 
+.slider-container .slick-arrow::before{
+    font-size: 2.5rem;
+}
+
+.slider-container .slick-arrow.slick-prev{
+    left: -10px;
+    z-index: 1;
+}
+
+.slider-container .slick-arrow.slick-next{
+    right: 5px;
+}
+
+
 .slick-slide{
     padding: 0 .3rem;
 }

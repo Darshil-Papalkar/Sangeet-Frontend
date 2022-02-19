@@ -156,7 +156,8 @@ const CategoryTable = (props) => {
                                 );
                               })
                             : column.id === 'show' ? 
-                              <Checkbox checked={row[column.id]} onClick={(e) => updateFavState(row[column.id], row.id)} {...label} icon={<FavoriteBorder />} checkedIcon={<Favorite />} />
+                              <Checkbox checked={row[column.id]} onClick={(e) => updateFavState(row[column.id], row.id)} 
+                                  {...label} icon={<FavoriteBorder />} checkedIcon={<Favorite />} />
                             : column.id === 'srno' ? `${((rowsPerPage*page) + (index+1))}.` : value}
                           </TableCell>
                         );

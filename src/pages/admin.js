@@ -56,12 +56,12 @@ const Admin = () => {
     
     const [rows, setRows] = useState([]);
 
-    const [catGenValue, setCatGenValue] = useState('');
     const [editId, setEditId] = useState(0);
-    const [modalId, setModalId] = useState('0');
     const [header, setHeader] = useState("");
-    const [warning, setWarning] = useState(false);
+    const [modalId, setModalId] = useState('0');
     const [deleteId, setDeleteId] = useState(0);
+    const [warning, setWarning] = useState(false);
+    const [catGenValue, setCatGenValue] = useState('');
     const [deleteItemName, setDeleteItemName] = useState('');
 
     const [genre, setGenre] = useState([]);
@@ -80,6 +80,7 @@ const Admin = () => {
     const [fav, setFav] = useState(false);
     const [music, setMusic] = useState({});
     const [musicName, setMusicName] = useState('');
+    const [musicPath, setMusicPath] = useState([]);
     const [musicDuration, setMusicDuration] = useState(0);
 
     const [musicTitle, setMusicTitle] = useState('');
@@ -105,13 +106,18 @@ const Admin = () => {
     const broadCast = () => setShowBroadCast(prev => !prev);
     const updateCreatePlaylist = () => setCreatePlaylist(prev => !prev);
     const updateAddGenreWidget = () => setAddGenreWidget(prev => !prev);
-    const updateEditMusicWidget = () => setEditMusicWidget(prev => !prev);
     const updateAddArtistWidget = () => setAddArtistWidget(prev => !prev);
     const updateAddCategoryWidget = () => setAddCategoryWidget(prev => !prev);
+    
+    const updateEditMusicWidget = () => {
+        setMusic({});
+        setMusicName('');
+        setEditMusicWidget(prev => !prev);
+    };
 
     const defaultProps = {
         options: rows,
-        getOptionLabel: (option) => option.musicTitle || option.name || option.type || option.title || option.playlist_name,
+        getOptionLabel: (option) => (option.musicTitle && `${option.musicTitle} - ${option.albumTitle}`) || option.name || option.type || option.title || option.playlist_name,
     };
     
     
@@ -359,7 +365,9 @@ const Admin = () => {
             const data = event.target.value;
             let searchedData = [];
             if(tabId === 1){
-                searchedData = musicRows.filter(row => row.musicTitle.toLowerCase().includes(data.toLowerCase()));
+                searchedData = [...musicRows.filter(row => row.musicTitle.toLowerCase().includes(data.toLowerCase())), 
+                                ...musicRows.filter(row => row.albumTitle.toLowerCase().includes(data.toLowerCase()))]
+                                .filter((item, index, self) => index === self.findIndex((entry) => entry.id === item.id));
             }
             else if(tabId === 2){
                 searchedData = artistRows.filter(row => row.name.toLowerCase().includes(data.toLowerCase()));
@@ -475,6 +483,7 @@ const Admin = () => {
             audioDurationRef.current.src = URL.createObjectURL(event.target.files[0]);
 
             setMusic(event.target.files);
+            setMusicPath(event.target.files);
             setMusicName(event.target.files[0].name);
         }
     };
@@ -482,9 +491,9 @@ const Admin = () => {
     const removeSelectedSong = () => {
         setMusic({});
         setMusicName("");
-        audioDurationRef?.current?.remove();
-        audioDurationRef.current = null;
         setMusicDuration(0);
+        audioDurationRef.current = null;
+        audioDurationRef?.current?.remove();
     };
     
     const removeSelectedImage = () => {
@@ -513,16 +522,16 @@ const Admin = () => {
         const today = new Date().toISOString();
 
         const formData = new FormData();
-        formData.append('musicImageFile', musicImg[0]);
+        formData.append("show", fav);
+        formData.append("date", today);
+        formData.append("genre", genre);
+        formData.append("artist", artist);
+        formData.append("category", category);
         formData.append('musicFile', music[0]);
         formData.append('musicTitle', musicTitle);
         formData.append('albumTitle', albumTitle);
-        formData.append("artist", artist);
-        formData.append("category", category);
-        formData.append("genre", genre);
-        formData.append("date", today);
-        formData.append("show", fav);
         formData.append("duration", musicDuration);
+        formData.append('musicImageFile', musicImg[0]);
 
         try{
             const response = await axios.post(apiLinks.postSong, formData, {
@@ -726,16 +735,23 @@ const Admin = () => {
                         editId={editId}
                         loader={loader}
                         category={category}
+                        musicName={musicName}
+                        musicPath={musicPath}
                         musicTitle={musicTitle}
                         albumTitle={albumTitle}
+                        musicDuration={musicDuration}
                         editMusicWidget={editMusicWidget}
+                        hiddenFileInput={hiddenFileInput}
+                        hiddenMusicInput={hiddenMusicInput}
 
                         setFav={setFav}
                         updateRow={updateRow}
                         setLoader={setLoader}
+                        uploadMusic={uploadMusic}
                         handleChange={handleChange}
                         setMusicTitle={setMusicTitle}
                         setAlbumTitle={setAlbumTitle}
+                        handleMusicClick={handleMusicClick}
                         handleGenreChange={handleGenreChange}
                         handleCategoryChange={handleCategoryChange}
                         updateEditMusicWidget={updateEditMusicWidget}
@@ -921,18 +937,18 @@ const Admin = () => {
                                 </NavItem>
                                 <NavItem>
                                     <NavLink
-                                        className={`${tabId === 5 && "active"} admin-nav-table-link`}
-                                        onClick={() => updateTabId(5)}
-                                    >
-                                        BroadCasts
-                                    </NavLink>
-                                </NavItem>
-                                <NavItem>
-                                    <NavLink
                                         className={`${tabId === 6 && "active"} admin-nav-table-link`}
                                         onClick={() => updateTabId(6)}
                                     >
                                         Playlists
+                                    </NavLink>
+                                </NavItem>
+                                <NavItem>
+                                    <NavLink
+                                        className={`${tabId === 5 && "active"} admin-nav-table-link`}
+                                        onClick={() => updateTabId(5)}
+                                    >
+                                        BroadCasts
                                     </NavLink>
                                 </NavItem>
                             </Nav>

@@ -48,7 +48,7 @@ const Body = (props) => {
                                 <div key={index}>
                                     <div className={`table-row ${isDark ? "dark" : "light"}`}
                                         key={song.id}
-                                        style={currentPlayer.id && currentPlayer.id === song.id ? {color: "#eee"}: null}
+                                        style={currentPlayer.id && currentPlayer.id === song.id ? {color: isDark ? "#eee" : "#111"}: null}
                                         onMouseEnter={(e) => {updatePlayId(song.id)}}
                                         onMouseLeave={(e) => {updatePlayId(0)}}
                                         onClick={e => loadAudio(songList, song, e)}

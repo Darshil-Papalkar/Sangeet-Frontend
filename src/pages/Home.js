@@ -2,6 +2,7 @@ import axios from "axios";
 import Slider from "react-slick";
 import { Container } from 'reactstrap';
 import { Link } from "react-router-dom";
+import Skeleton from '@mui/material/Skeleton';
 import React, { useEffect, useReducer, useState, useContext } from "react";
 
 import { apiLinks } from '../connection.config';
@@ -105,17 +106,74 @@ const reducer = (state, action) => {
     }
 };
 
-const settings = {
-    dots: false,
+const loaderSettings = {
     arrows: false,
-    draggable: true,
-    lazyLoad: "ondemand",
+    dots: false,
+    draggable: false,
+    easing: "linear",
     infinite: false,
+    lazyLoad: "ondemand",
+    speed: 500,
+    slidesToShow: 8,
+    slidesToScroll: 1,
+    swipeToSlide: false,
+    responsive: [
+        {
+            breakpoint: 1500,
+            settings: {
+              slidesToShow: 7,
+            }
+        },
+        {
+            breakpoint: 1350,
+            settings: {
+              slidesToShow: 6,
+            }
+        },
+        {
+          breakpoint: 1024,
+          settings: {
+            slidesToShow: 5,
+          }
+        },
+        {
+            breakpoint: 850,
+            settings: {
+              slidesToShow: 4,
+            }
+          },
+        {
+          breakpoint: 600,
+          settings: {
+            slidesToShow: 3
+          }
+        },
+        {
+          breakpoint: 480,
+          settings: {
+            slidesToShow: 2
+          }
+        },
+        {
+            breakpoint: 300,
+            settings: {
+              slidesToShow: 1
+            }
+        },
+    ]
+};
+
+const settings = {
+    arrows: true,
+    dots: false,
+    draggable: true,
+    easing: "linear",
+    infinite: false,
+    lazyLoad: "ondemand",
     speed: 500,
     slidesToShow: 8,
     slidesToScroll: 1,
     swipeToSlide: true,
-    easing: "linear",
     responsive: [
         {
             breakpoint: 1500,
@@ -324,7 +382,29 @@ const Home = (props) => {
                                 </Container>
                             );
                         })
-                    : <React.Fragment />
+                    : Array.from(new Array(3)).map((item, index) => {
+                        return (
+                            <Container key={index} className=" mt-3 slider-container" fluid>
+                                <Skeleton animation='wave' variant="h1" width="30%" height="3rem" className="mb-3 mt-3" />
+                                <Slider {...loaderSettings}>
+                                    {
+                                        Array.from(new Array(10)).map((dummy, idx) => {
+                                            return (
+                                                <React.Fragment>
+                                                    <div className="card-image-container">
+                                                        <Skeleton animation='wave' variant="rectangular" height="100%" className="card-image" />
+                                                    </div>
+                                                    <div className="card-text-container">
+                                                        <Skeleton animation='wave' variant="text" className="card-text" />
+                                                    </div>
+                                                </React.Fragment>
+                                            );
+                                        })
+                                    }
+                                </Slider>
+                            </Container>
+                        );
+                    })
                     }
                 </Container>
                 <Container key="artist-container" className="mt-5" fluid>
@@ -356,7 +436,30 @@ const Home = (props) => {
                             })}
                             </Slider>
                         </Container>
-                    : <React.Fragment /> }
+                    : Array.from(new Array(1)).map((item, index) => {
+                        return (
+                            <Container key={index} className=" mt-3 slider-container" fluid>
+                                <Skeleton animation='wave' variant="h1" width="30%" height="3rem" className="mb-3 mt-3" />
+                                <Slider {...loaderSettings}>
+                                    {
+                                        Array.from(new Array(10)).map((dummy, idx) => {
+                                            return (
+                                                <React.Fragment>
+                                                    <div className="card-image-container">
+                                                        <Skeleton animation='wave' variant="circular" height="100px" width="100px" className="card-image" />
+                                                    </div>
+                                                    <div className="card-text-container">
+                                                        <Skeleton animation='wave' variant="text" className="card-text" />
+                                                    </div>
+                                                </React.Fragment>
+                                            );
+                                        })
+                                    }
+                                </Slider>
+                            </Container>
+                        );
+                    }) 
+                    }
                 </Container>
             </div>
         </div>
