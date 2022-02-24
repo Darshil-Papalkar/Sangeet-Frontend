@@ -1,110 +1,17 @@
-import axios from "axios";
 import Slider from "react-slick";
 import { Container } from 'reactstrap';
 import { Link } from "react-router-dom";
 import Skeleton from '@mui/material/Skeleton';
-import React, { useEffect, useReducer, useState, useContext } from "react";
+import React, { useState, useContext } from "react";
 
 import { apiLinks } from '../connection.config';
 import PauseIcon from '@mui/icons-material/Pause';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import SpinnerGrow from "../components/spinner/spinner-grow";
 import Navigation from "../components/navigation/Navigation-bar/navigation";
-import { LoadAudio, PlayerContext, PlayPause, Playing, IsDark } from "../App";
+import { LoadAudio, PlayerContext, PlayPause, Playing, IsDark, List, Loader } from "../App";
 
 import "./Home.css";
-
-const musicList = {};
-
-const reducer = (state, action) => {
-    switch(action.type){
-        case 'FETCH_SUCCESS':
-        case "FETCH_CACHE":
-            const artistData = action.artistData.filter(item => item.show === true);
-            const genreData = action.genreData.filter(item => item.show === true);
-            const categoryData = action.categoryData.filter(item => item.show === true);
-            const term = action.message.filter(item => item.show === true);
-            
-            let genreList = {};
-            let artistList = {};
-            let albumList = {};
-            let categoryList = {};
-            let musicList = action.message;
-
-            for(var i=0; i < term.length; i++){
-
-                // Filtering genre data
-                let list = term[i].genre;
-                for(var j=0; j < list.length; j++){
-                    const data = list[j];
-                    if(genreData.find(genre => genre.type === data)){
-                        if(genreList[data] === undefined){
-                            genreList[data] = [term[i]];
-                        }
-                        else{
-                            genreList[data].push(term[i]);
-                        }
-                    }
-                }
-
-                // Filtering album data
-                list = term[i].albumTitle;
-                if(albumList[list] === undefined){
-                    albumList[list] = [term[i]];
-                }
-                else{
-                    albumList[list].push(term[i]);
-                }
-
-                // Filtering artist data
-                list = term[i].artists;
-                for(j=0; j < list.length; j++){
-                    const data = list[j];
-                    if(artistData.find(artist => artist.name === data)){
-                        if(artistList[data] === undefined){
-                            artistList[data] = [term[i]];
-                        }
-                        else{
-                            artistList[data].push(term[i]);
-                        }
-                    }
-                }
-
-                // Filtering category data
-                list = term[i].category;
-                for(j=0; j < list.length; j++){
-                    const data = list[j];
-                    if(categoryData.find(category => category.type === data)){
-                        if(categoryList[data] === undefined){
-                            categoryList[data] = [term[i]];
-                        }
-                        else{
-                            categoryList[data].push(term[i]);
-                        }
-                    }
-                }
-            }
-
-            const list = {
-                genreList,
-                albumList,
-                artistList,
-                categoryList,
-                musicList
-            };
-
-            // console.log(list);
-
-            return list;
-
-        case 'FETCH_ERROR':
-            // Error(action.message);
-            return state;
-
-        default:
-            return state;
-    }
-};
 
 const loaderSettings = {
     arrows: false,
@@ -221,18 +128,15 @@ const settings = {
 };
 
 const Home = (props) => {
+    const list = useContext(List);
     const isDark = useContext(IsDark);
+    const loader = useContext(Loader);
     const playing = useContext(Playing);
     const loadAudio = useContext(LoadAudio);
     const playPauseState = useContext(PlayPause);
     const currentSong = useContext(PlayerContext);
 
-    const [loader, setLoader] = useState(false);
     const [mouseId, setMouseId] = useState(0);
-
-    const [list, dispatch] = useReducer(reducer, musicList);
-
-    // console.log(loader, list);
 
     const handleStateChange = (e) => {
         const event = {
@@ -242,64 +146,6 @@ const Home = (props) => {
         };
         playPauseState(event);
     };
-
-    useEffect(() => {
-
-        let abortController = new AbortController();
-
-        const getAudioData = async() => {
-            try{
-                setLoader(true);
-                const response = await axios.get(apiLinks.getAllAudioDetails, {
-                    signal: abortController.signal
-                });
-                if(response.data.code === 200){
-                    dispatch({  type: 'FETCH_SUCCESS', 
-                                message: response.data.message,
-                                artistData: response.data.artistData,
-                                genreData: response.data.genreData,
-                                categoryData: response.data.categoryData
-                            });
-                    if(window.localStorage){
-                        window.localStorage.setItem("Song Data", JSON.stringify({
-                            message: response.data.message,
-                            artistData: response.data.artistData,
-                            genreData: response.data.genreData,
-                            categoryData: response.data.categoryData
-                        }));
-                    }
-                }
-                else{
-                    dispatch({ type: 'FETCH_ERROR', message: response.data.message });
-                }
-            }
-            catch(err){
-                console.log(err);
-                dispatch({ type: 'FETCH_ERROR', message: err.message });
-            }
-            finally{
-                setLoader(false);
-            }
-        };
-
-        if(window?.localStorage?.getItem("Song Data") && Object.keys(currentSong).length !== 0){
-            const prevData = JSON.parse(window.localStorage.getItem("Song Data"));
-            if(Object.keys(prevData).length)
-                dispatch({type: "FETCH_CACHE", ...prevData})
-            else
-                getAudioData();
-        }
-        else
-            getAudioData();
-
-        return () => {
-            if(abortController){
-                abortController?.abort();
-                setLoader(false);
-            }
-        }
-
-    }, [currentSong]);
 
     // console.log(list);
 
@@ -328,7 +174,7 @@ const Home = (props) => {
                                 ll = list.categoryList[catList];
 
                             return (
-                                <Container key={catList} className=" mt-3 slider-container" fluid>
+                                <Container key={catList} className={`mt-3 slider-container ${isDark ? "dark" : "light"}`} fluid>
                                     <h2 className={`category-list-heading ${isDark ? "dark-heading" : "light-heading"}`} title={catList}>{catList}</h2>
                                     <Slider {...settings}>
                                         {ll.map(item => {
@@ -390,7 +236,7 @@ const Home = (props) => {
                                     {
                                         Array.from(new Array(10)).map((dummy, idx) => {
                                             return (
-                                                <React.Fragment>
+                                                <React.Fragment key={idx}>
                                                     <div className="card-image-container">
                                                         <Skeleton sx={isDark ? {bgcolor: '#ffffff29'}: null} animation='wave' variant="rectangular" height="100%" className="card-image" />
                                                     </div>
@@ -409,7 +255,7 @@ const Home = (props) => {
                 </Container>
                 <Container key="artist-container" className="mt-5" fluid>
                     { list.artistList ? 
-                        <Container className="slider-container" fluid>
+                        <Container className={`slider-container ${isDark ? "dark" : "light"}`} fluid>
                             <h2 className={`category-list-heading ${isDark ? "dark-heading" : "light-heading"}`} title="Artists">Artists</h2>
                             <Slider {...settings}>
                             { Object.keys(list.artistList).map((artist, id) => {
@@ -444,7 +290,7 @@ const Home = (props) => {
                                     {
                                         Array.from(new Array(10)).map((dummy, idx) => {
                                             return (
-                                                <React.Fragment>
+                                                <React.Fragment key={idx}>
                                                     <div className="card-image-container">
                                                         <Skeleton sx={isDark ? {bgcolor: '#ffffff29'}: null} animation='wave' variant="circular" height="100px" width="100px" className="card-image" />
                                                     </div>

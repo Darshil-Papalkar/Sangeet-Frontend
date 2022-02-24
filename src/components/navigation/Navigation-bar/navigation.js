@@ -12,13 +12,14 @@ import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import React, { useState, useContext, useEffect } from "react";
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Navbar, NavItem, Nav, NavbarToggler, NavbarBrand, NavLink,
-        Offcanvas, OffcanvasHeader, OffcanvasBody } from "reactstrap";
-import { faHome, faMusic, faSignInAlt } from "@fortawesome/free-solid-svg-icons";
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Navbar, NavbarBrand } from 'reactstrap';
+// import { Navbar, NavItem, Nav, NavbarToggler, NavbarBrand, NavLink,
+//         Offcanvas, OffcanvasHeader, OffcanvasBody } from "reactstrap";
+// import { faHome, faMusic, faSignInAlt } from "@fortawesome/free-solid-svg-icons";
 
 import { Subscribe } from "../../../client";
-import { IsDark, SetIsDark } from "../../../App";
+import { IsDark, SetIsDark, Search } from "../../../App";
 import { apiLinks } from "../../../connection.config.js";
 
 import "./navigation.css";
@@ -74,9 +75,10 @@ const Navigation = () => {
     const navigate = useNavigate();
 
     const isDark = useContext(IsDark);
+    const setSearch = useContext(Search);
     const setIsDark = useContext(SetIsDark);
 
-    const [isOpen, setIsOpen] = useState(false);
+    // const [isOpen, setIsOpen] = useState(false);
     const [notificationData, setNotificationData] = useState([]);
 
     const theme = createTheme({
@@ -85,9 +87,9 @@ const Navigation = () => {
         }
     });
 
-    const updateNavClick = () => {
-        setIsOpen(prev => !prev);
-    };
+    // const updateNavClick = () => {
+    //     setIsOpen(prev => !prev);
+    // };
 
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
@@ -127,6 +129,11 @@ const Navigation = () => {
         setAnchorEl(null);
     };
 
+    const moveNavigate = (notification) => {
+        const url = notification.url.split('15.206.69.224/');
+        navigate("../"+url[1]);
+    };
+
     useEffect(() => {
         getNotificationData();
     }, []);
@@ -148,7 +155,14 @@ const Navigation = () => {
                         </div>
                     </NavbarBrand>
 
-                    <MaterialUISwitch theme={theme} checked={isDark} onClick={setIsDark} />
+                    <Tooltip title="Search">
+                        <IconButton
+                            onClick={() => setSearch(prev => !prev)}
+                        >
+                            <SearchIcon 
+                                sx={{ fontSize: 30, color: isDark ? "rgb(0, 255, 0)" : "rgb(0, 0, 0)" }} />
+                        </IconButton>
+                    </Tooltip>
 
                     <Tooltip title="Notifications">
                         <IconButton
@@ -167,10 +181,8 @@ const Navigation = () => {
                         </IconButton>
                     </Tooltip>
 
-                    <Tooltip title="Search">
-                        <IconButton>
-                            <SearchIcon sx={{ fontSize: 30, color: isDark ? "rgb(0, 255, 0)" : "rgb(0, 0, 0)" }} />
-                        </IconButton>
+                    <Tooltip title="Toggle Theme">
+                        <MaterialUISwitch theme={theme} checked={isDark} onClick={setIsDark} />
                     </Tooltip>
 
                     <Menu
@@ -211,7 +223,7 @@ const Navigation = () => {
                         {
                             notificationData.length > 0 ?
                                 notificationData.map(notification => 
-                                    <MenuItem key={notification.id} onClick={() => navigate(notification.url)}>
+                                    <MenuItem key={notification.id} onClick={() => moveNavigate(notification)}>
                                         <div>
                                             <div className="notification-row mb-2">
                                                 <div className="notification-image-container">
@@ -239,7 +251,7 @@ const Navigation = () => {
                         }
                     </Menu>
 
-                    <NavbarToggler className="me-2" onClick={updateNavClick} />
+                    {/* <NavbarToggler className="me-2" onClick={updateNavClick} />
                     
                     <Offcanvas isOpen={isOpen} className="offcanvas-tag" scrollable={false}
                         toggle={updateNavClick} direction="end">
@@ -252,11 +264,14 @@ const Navigation = () => {
                                         <span className="extra-spacing" /> Home
                                     </NavLink>
                                 </NavItem>
-                                <NavItem className="navbar-item">
-                                    <NavLink className="navbar-item-link" onClick={() => navigate("/")}>
-                                        <FontAwesomeIcon icon={faHome} /> 
-                                        <span className="extra-spacing" /> Home
-                                    </NavLink>
+                                <NavItem className="navbar-item show-on-small">
+                                    <div className="navbar-item-link"
+                                        onClick={() => setSearch(prev => !prev)}
+                                    >
+                                        <SearchIcon 
+                                            sx={{ fontSize: 30, color: isDark ? "rgb(0, 255, 0)" : "rgb(0, 0, 0)" }} />
+                                        <span className="extra-spacing" /> Search
+                                    </div>
                                 </NavItem>
                                 <NavItem className="navbar-item">
                                     <NavLink className="navbar-item-link">
@@ -272,7 +287,7 @@ const Navigation = () => {
                                 </NavItem>
                             </Nav>
                         </OffcanvasBody>
-                    </Offcanvas>
+                    </Offcanvas> */}
                 </Navbar>
             </div>
         </>

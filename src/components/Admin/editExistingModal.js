@@ -104,7 +104,7 @@ const EditExistingModal = (props) => {
                 else{
                     Error(response.data.message);
                 }
-                // props.toggle(false);
+                props.toggle(false);
             }
         
         }

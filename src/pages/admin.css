@@ -154,6 +154,7 @@
 
 .admin-table-heading{
     font-size: 1.2rem !important;
+    z-index: 0 !important;
 }
 
 .admin-table-array-setup{

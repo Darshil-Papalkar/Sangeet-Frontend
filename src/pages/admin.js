@@ -874,29 +874,6 @@ const Admin = () => {
 
                 {/* <Container fluid>
                      */}
-                <Box className='add-button-speed-dial' sx={{ height: 300, transform: 'translateZ(0px)', 
-                        flexGrow: 1, bottom: `${currentSong.id ? "8rem" : ".5rem"}` }}>
-                    <Backdrop open={open} />
-                    <SpeedDial
-                        ariaLabel="SpeedDial tooltip example"
-                        sx={{ position: 'absolute', bottom: 16, right: 16 }}
-                        icon={<SpeedDialIcon />}
-                        onClose={handleClose}
-                        onOpen={handleOpen}
-                        open={open}
-                        className="speed-dial-custom"
-                    >
-                        {actions.map((action, index) => (
-                            <SpeedDialAction
-                                key={action.name}
-                                icon={action.icon}
-                                tooltipTitle={action.name}
-                                tooltipOpen
-                                onClick={action.click}
-                            />
-                        ))}
-                    </SpeedDial>
-                </Box>
                 <Container className={`page-content ${isDark ? "dark" : "light"} mb-3`}
                     style={currentSong.id ? {height: "calc(100vh - 230px)"} : {height: "calc(100vh - 120px)"}}
                 >
@@ -960,7 +937,7 @@ const Admin = () => {
                                 autoComplete
                                 includeInputInList
                                 renderInput={(params) => (
-                                <TextField {...params} label={  tabId === 1 ? "Search Music" : 
+                                <TextField {...params} label={  tabId === 1 ? "Search Music/Album" : 
                                                                 tabId === 2 ? "Search Artist" : 
                                                                 tabId === 3 ? "Search Genre" : 
                                                                 tabId === 4 ? "Search Category":
@@ -1048,7 +1025,29 @@ const Admin = () => {
                         </TabContent>
                     </div>
                 </Container>
-
+                <Box className='add-button-speed-dial' sx={{ height: 300, transform: 'translateZ(0px)', 
+                        flexGrow: 1, bottom: `${currentSong.id ? "8rem" : ".5rem"}` }}>
+                    <Backdrop open={open} />
+                    <SpeedDial
+                        ariaLabel="SpeedDial tooltip example"
+                        sx={{ position: 'absolute', bottom: 16, right: 16 }}
+                        icon={<SpeedDialIcon />}
+                        onClose={handleClose}
+                        onOpen={handleOpen}
+                        open={open}
+                        className="speed-dial-custom"
+                    >
+                        {actions.map((action, index) => (
+                            <SpeedDialAction
+                                key={action.name}
+                                icon={action.icon}
+                                tooltipTitle={action.name}
+                                tooltipOpen
+                                onClick={action.click}
+                            />
+                        ))}
+                    </SpeedDial>
+                </Box>
             </div>
         </React.Fragment>
     );

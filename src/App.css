@@ -18,3 +18,43 @@
 .light{
     background-color: #eee;
 }
+
+.search-slider .slick-arrow{
+    margin-top: 1.5rem;
+}
+
+.search-slider .slick-arrow::before{
+    font-size: 1.5rem;
+    color: rgb(64, 226, 0);
+}
+
+.search-slider .slick-prev{
+    left: -7px;
+    z-index: 1;
+}
+
+.search-slider .slick-next{
+    right: -5px;
+}
+
+.search-card-image{
+    width: 100%;
+    height: 5rem;
+    cursor: pointer;
+}
+
+.search-card-body.card-body{
+    padding: 1rem .3rem;
+}
+
+.search-card-text.card-text{
+    font-size: 1rem;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 0;
+    width: 100%;
+    cursor: pointer;
+    color: #000;
+    text-decoration: none;
+}

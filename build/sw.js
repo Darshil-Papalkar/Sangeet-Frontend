@@ -1,3 +1,7 @@
+this.addEventListener('fetch', (event) => {
+
+});
+
 this.addEventListener('push', (e) => {
     
     const data = e.data.json();

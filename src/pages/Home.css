@@ -59,6 +59,10 @@
     font-size: 2.5rem;
 }
 
+.slider-container.light .slick-arrow::before{
+    color: #000;
+}
+
 .slider-container .slick-arrow.slick-prev{
     left: -10px;
     z-index: 1;

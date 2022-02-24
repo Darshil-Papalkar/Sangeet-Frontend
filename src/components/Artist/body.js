@@ -85,7 +85,7 @@ const Body = (props) => {
                                                 <div className="d-flex custom-artists">
                                                     {
                                                         song.artists?.map((art, index) => {
-                                                            return props.artist !== art ?(
+                                                            return (
                                                                 <div className="" key={index}>
                                                                     <span className="song-list-artist">
                                                                         <Link to={`/artist/${art}`}>
@@ -96,7 +96,7 @@ const Body = (props) => {
                                                                         {song.artists.length - 1 > index ? ",": ""}&nbsp;
                                                                     </span>
                                                                 </div>
-                                                            ) : <React.Fragment key={index} />
+                                                            )
                                                         })
                                                     }
                                                 </div>

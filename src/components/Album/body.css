@@ -29,6 +29,10 @@
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
+    
+    width: 85%;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 .srno{
@@ -37,6 +41,12 @@
     align-self: center;
     text-align: center;
     cursor: pointer;
+}
+
+@media screen and (max-width: 768px) {
+    .srno{
+        width: fit-content;
+    }
 }
 
 .music-title{
@@ -49,8 +59,11 @@
 }
 
 .custom-artists{
-    line-height: 1rem;
     font-size: 1rem;
+    line-height: 1.4rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 
 }
 

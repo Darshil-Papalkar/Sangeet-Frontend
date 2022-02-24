@@ -2,21 +2,24 @@ import axios from 'axios';
 import Menu from '@mui/material/Menu';
 import Badge from '@mui/material/Badge';
 import Switch from '@mui/material/Switch';
+import { createTheme } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 import Divider from '@mui/material/Divider';
 import MenuItem from '@mui/material/MenuItem';
 import { styled } from '@mui/material/styles';
 import { useNavigate } from "react-router-dom";
 import IconButton from '@mui/material/IconButton';
+import SearchIcon from '@mui/icons-material/Search';
 import React, { useState, useContext, useEffect } from "react";
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import { Navbar, NavItem, Nav, NavbarToggler, NavbarBrand, NavLink,
-        Offcanvas, OffcanvasHeader, OffcanvasBody, Container } from "reactstrap";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faMusic, faSignInAlt } from "@fortawesome/free-solid-svg-icons";
+// import { Navbar, NavItem, Nav, NavbarToggler, NavbarBrand, NavLink,
+//         Offcanvas, OffcanvasHeader, OffcanvasBody, Container } from "reactstrap";
+import { Navbar, NavbarBrand, Container } from 'reactstrap';
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// import { faHome, faMusic, faSignInAlt } from "@fortawesome/free-solid-svg-icons";
 
 import { Subscribe } from "../../../client";
-import { IsDark, SetIsDark } from "../../../App";
+import { IsDark, SetIsDark, Search } from "../../../App";
 import { apiLinks } from "../../../connection.config.js";
 
 import "./admin-navigation.css";
@@ -44,7 +47,7 @@ const MaterialUISwitch = styled(Switch)(({ theme }) => ({
       },
     },
     '& .MuiSwitch-thumb': {
-      backgroundColor: theme.palette.mode === 'dark' ? '#003892' : '#001e3c',
+      backgroundColor: theme.palette.mode === 'dark' ? '#003892' : '#ffc107',
       width: 32,
       height: 32,
       '&:before': {
@@ -57,7 +60,7 @@ const MaterialUISwitch = styled(Switch)(({ theme }) => ({
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'center',
         backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 20 20"><path fill="${encodeURIComponent(
-          '#fff',
+          '#111',
         )}" d="M9.305 1.667V3.75h1.389V1.667h-1.39zm-4.707 1.95l-.982.982L5.09 6.072l.982-.982-1.473-1.473zm10.802 0L13.927 5.09l.982.982 1.473-1.473-.982-.982zM10 5.139a4.872 4.872 0 00-4.862 4.86A4.872 4.872 0 0010 14.862 4.872 4.872 0 0014.86 10 4.872 4.872 0 0010 5.139zm0 1.389A3.462 3.462 0 0113.471 10a3.462 3.462 0 01-3.473 3.472A3.462 3.462 0 016.527 10 3.462 3.462 0 0110 6.528zM1.665 9.305v1.39h2.083v-1.39H1.666zm14.583 0v1.39h2.084v-1.39h-2.084zM5.09 13.928L3.616 15.4l.982.982 1.473-1.473-.982-.982zm9.82 0l-.982.982 1.473 1.473.982-.982-1.473-1.473zM9.305 16.25v2.083h1.389V16.25h-1.39z"/></svg>')`,
       },
     },
@@ -72,14 +75,21 @@ const AdminNavigation = (props) => {
     const navigate = useNavigate();
 
     const isDark = useContext(IsDark);
+    const setSearch = useContext(Search);
     const setIsDark = useContext(SetIsDark);
 
-    const [isOpen, setIsOpen] = useState(false);
+    // const [isOpen, setIsOpen] = useState(false);
     const [notificationData, setNotificationData] = useState([]);
 
-    const updateNavClick = () => {
-        setIsOpen(prev => !prev);
-    };
+    // const updateNavClick = () => {
+    //     setIsOpen(prev => !prev);
+    // };
+
+    const theme = createTheme({
+        palette: {
+            mode: isDark ? "dark" : "light"
+        }
+    });
 
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
@@ -119,6 +129,11 @@ const AdminNavigation = (props) => {
         setAnchorEl(null);
     };
 
+    const moveNavigate = (notification) => {
+        const url = notification.url.split('15.206.69.224/');
+        navigate("../"+url[1]);
+    };
+
     useEffect(() => {
         getNotificationData();
     }, []);
@@ -139,7 +154,16 @@ const AdminNavigation = (props) => {
                             SANGEET
                         </div>
                     </NavbarBrand>
-                    <MaterialUISwitch checked={isDark} onClick={setIsDark} />
+
+                    <Tooltip title="Search">
+                        <IconButton
+                            onClick={() => setSearch(prev => !prev)}
+                        >
+                            <SearchIcon 
+                                sx={{ fontSize: 30, color: isDark ? "rgb(0, 255, 0)" : "rgb(0, 0, 0)" }} />
+                        </IconButton>
+                    </Tooltip>
+
 
                     <Tooltip title="Notifications">
                         <IconButton
@@ -156,6 +180,10 @@ const AdminNavigation = (props) => {
                                 <NotificationsIcon sx={{ fontSize: 30, color: isDark ? "rgb(0, 255, 0)" : "rgb(0, 0, 0)" }} />
                             </Badge>
                         </IconButton>
+                    </Tooltip>
+
+                    <Tooltip title="Toggle Theme">
+                        <MaterialUISwitch theme={theme} checked={isDark} onClick={setIsDark} />
                     </Tooltip>
 
                     <Menu
@@ -196,7 +224,7 @@ const AdminNavigation = (props) => {
                         {
                             notificationData.length > 0 ?
                                 notificationData.map(notification => 
-                                    <MenuItem key={notification.id} onClick={() => navigate(notification.url)}>
+                                    <MenuItem key={notification.id} onClick={() => moveNavigate(notification)}>
                                         <div>
                                             <div className="notification-row mb-2">
                                                 <div className="notification-image-container">
@@ -224,7 +252,7 @@ const AdminNavigation = (props) => {
                         }
                     </Menu>
 
-                    <NavbarToggler className="me-2" onClick={updateNavClick} />
+                    {/* <NavbarToggler className="me-2" onClick={updateNavClick} />
                     
                     <Offcanvas isOpen={isOpen} className="offcanvas-tag" scrollable={false}
                         toggle={updateNavClick} direction="end">
@@ -243,12 +271,12 @@ const AdminNavigation = (props) => {
                                             <span className="extra-spacing" /> Playlists
                                     </NavLink>
                                 </NavItem>
-                                {/* <NavItem className="navbar-item">
+                                <NavItem className="navbar-item">
                                     <NavLink className="navbar-item-link">
                                         <FontAwesomeIcon icon={faBell} /> 
                                             <span className="extra-spacing" /> Notifications
                                     </NavLink>
-                                </NavItem> */}
+                                </NavItem>
                                 <NavItem className="navbar-item">
                                     <NavLink className="navbar-item-link" onClick={() => navigate('/admin')}>
                                         <FontAwesomeIcon icon={faSignInAlt} /> 
@@ -257,7 +285,7 @@ const AdminNavigation = (props) => {
                                 </NavItem>
                             </Nav>
                         </OffcanvasBody>
-                    </Offcanvas>
+                    </Offcanvas> */}
                 </Navbar>
             </div>
             <Container className="pt-5 pb-5"/>

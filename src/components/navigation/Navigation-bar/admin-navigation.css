@@ -149,6 +149,21 @@ ul.MuiMenu-list{
     flex-direction: row;
 }
 
+.show-on-small{
+    display: none;
+}
+
+@media screen and (max-width: 374px) {
+
+    .show-on-small{
+        display: block;
+    }   
+
+    .hide-on-small{
+        display: none;
+    }
+}
+
 .navbar-item{
     text-align: left;
 }

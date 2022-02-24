@@ -9,6 +9,20 @@
     border-bottom: 1px solid rgb(64, 226, 0);
 }
 
+@media screen and (max-width: 524px) {
+    .album-container{
+        gap: .5rem;
+    }
+
+    .album-details{
+        width: 60%;
+    }
+
+    .album-name{
+        font-size: 1.6rem !important;
+    }
+}
+
 .album-image-container{
     height: 11rem;
     width: 11rem;
