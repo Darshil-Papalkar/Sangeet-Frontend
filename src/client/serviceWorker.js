@@ -2,7 +2,7 @@ export function register(){
     if('serviceWorker' in navigator){
         // const url = "http://localhost:3000/sw.js"; // local testing url
         // const url = "http://localhost:5000/sw.js"; // local build url
-        const url = "https://sangeet.tech/" // production url
+        const url = "https://sangeet.tech/sw.js" // production url
         navigator.serviceWorker.register(url, {
             scope: '/',
         })
