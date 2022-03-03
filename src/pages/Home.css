@@ -81,6 +81,17 @@
     padding-left: 1rem;   
 }
 
+.category-list-heading .category-title{
+    
+    color: rgb(64, 226, 0) !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-decoration: none;
+    cursor: pointer;
+    text-shadow: 0 0 1px #000;
+}
+
 .category-list-heading.light-heading{
     color: #000;
 }

@@ -1,0 +1,91 @@
+.song-list{
+    margin-top: 2rem;
+    cursor: default;
+}
+
+.table-row-dark,
+.table-row-light{
+    color: rgb(64, 226, 0);
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    font-size: 1.4rem;
+    padding: 1rem 1.5rem;
+    
+    align-items: center;
+    align-content: center;
+}
+
+.table-row-dark:hover{
+    color: #eee;
+}
+
+.table-row-light:hover{
+    color: #111;
+}
+
+.srno-title{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    
+    width: 85%;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.srno{
+    padding: 0 .5rem;
+    width: 60px;
+    align-self: center;
+    text-align: center;
+    cursor: pointer;
+}
+
+@media screen and (max-width: 768px) {
+    .srno{
+        width: fit-content;
+    }
+}
+
+.music-title{
+    cursor: default;
+}
+
+.song-list-artist > a{
+    text-decoration: none;
+    color: inherit;
+}
+
+.custom-artists{
+    font-size: 1rem;
+    line-height: 1.4rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+}
+
+.duration{
+    padding: 0 1rem;
+    font-size: 1.1rem;
+}
+
+.custom-bottom-border{
+    /* padding: 0 1.5rem; */
+    width: 95%;
+    margin: auto;
+    border-bottom: 1px solid rgb(64, 226, 0);
+}
+
+@media screen and (max-width: 425px) {
+    .table-row{
+        font-size: 1.1rem;
+        padding: 1rem .5rem;
+    }
+
+    .duration{
+        font-size: .8rem;
+    }
+}

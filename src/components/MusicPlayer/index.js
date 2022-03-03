@@ -19,7 +19,7 @@ import "./index.css";
 
 const MusicPlayer = forwardRef((props, ref) => {
     const theme = useTheme();
-
+    
     const audioRef = useRef(null);
     const borderRef = useRef(null);
     const volumeRef = useRef(null);
@@ -37,11 +37,13 @@ const MusicPlayer = forwardRef((props, ref) => {
     const [playlist, setPlaylist] = useState([]);
     const [currentSong, setCurrentSong] = useState({});
     const [currentSongIdx, setCurrentSongIdx] = useState(0);
-
+    
     const [volume, setVolume] = useState(1.0);
     const [currentTime, setCurrentTime] = useState(0);
     const [endTime, setEndTime] = useState(0);
-
+    
+    document.title = currentSong.musicTitle || 'Sangeet - Enjoy Ad Free Music'; 
+    
     const calculateSongTime = (time) => {
         // console.log(time);
         if(time !== Infinity){

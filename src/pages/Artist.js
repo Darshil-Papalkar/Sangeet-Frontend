@@ -19,10 +19,12 @@ export const AlbumList = React.createContext();
 export const CalculateTimeContext = React.createContext();
 
 const Artist = (props) => {
+    const params = useParams();
+    document.title = params.artistName;
+
     const isDark = useContext(IsDark);
     const currentSong = useContext(PlayerContext);
 
-    const params = useParams();
 
     const [loader, setLoader] = useState(false);
     const [songList, setSongList] = useState([]);
@@ -40,6 +42,7 @@ const Artist = (props) => {
     };
 
     useEffect(() => {
+
         let abortController = new AbortController();
 
         const getArtistDetails = async () => {

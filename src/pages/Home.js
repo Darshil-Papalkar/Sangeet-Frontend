@@ -147,7 +147,7 @@ const Home = (props) => {
         playPauseState(event);
     };
 
-    // console.log(list);
+    document.title = 'Sangeet - Enjoy Ad Free Music';
 
     return (
         <div className="App">
@@ -175,7 +175,12 @@ const Home = (props) => {
 
                             return (
                                 <Container key={catList} className={`mt-3 slider-container ${isDark ? "dark" : "light"}`} fluid>
-                                    <h2 className={`category-list-heading ${isDark ? "dark-heading" : "light-heading"}`} title={catList}>{catList}</h2>
+                                    <h2 className={`category-list-heading ${isDark ? "dark-heading" : "light-heading"}`} 
+                                        title={catList}>
+                                        <Link to={`/category/${catList}`} className={`category-title ${isDark ? "hover-dark" : "hover-light"}`}>
+                                            {catList}
+                                        </Link>
+                                    </h2>
                                     <Slider {...settings}>
                                         {ll.map(item => {
                                             return (

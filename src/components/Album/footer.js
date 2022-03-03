@@ -12,7 +12,7 @@ import "./footer.css";
 
 const settings = {
     dots: false,
-    arrows: false,
+    arrows: true,
     draggable: true,
     lazyLoad: "ondemand",
     infinite: false,

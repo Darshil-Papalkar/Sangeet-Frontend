@@ -41,6 +41,8 @@ let genreRows = [], artistRows = [], categoryRows = [],
     musicRows = [], broadcastRows = [], playlistRows = [];
 
 const Admin = () => {
+    document.title = 'Admin';
+
     const isDark = useContext(IsDark);
     const currentSong = useContext(PlayerContext);
 
@@ -122,7 +124,7 @@ const Admin = () => {
     
     
     useEffect(() => {
-
+        
         if(window?.localStorage){
             const id = window?.localStorage?.getItem("tabId");
             if(id && 0 < id < 7){

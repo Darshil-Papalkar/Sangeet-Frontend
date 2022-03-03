@@ -130,7 +130,7 @@ const Navigation = () => {
     };
 
     const moveNavigate = (notification) => {
-        const url = notification.url.split('15.206.69.224/');
+        const url = notification.url.split('https://sangeet.tech/');
         navigate("../"+url[1]);
     };
 

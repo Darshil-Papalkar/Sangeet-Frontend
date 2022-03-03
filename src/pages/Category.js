@@ -2,32 +2,32 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import React, { useEffect, useState, useContext } from "react";
 
-import Body from "../components/Album/body";
-import Header from "../components/Album/header";
-import Footer from "../components/Album/footer";
+import Body from "../components/Category/body";
+import Header from "../components/Category/header";
+import Footer from "../components/Category/footer";
 import { apiLinks } from "../connection.config";
 import { Error } from "../components/Notification/Notification";
 import SpinnerGrow from "../components/spinner/spinner-grow";
 import Navigation from "../components/navigation/Navigation-bar/navigation";
 import { PlayerContext, IsDark } from "../App";
 
-import "./album.css";
+import "./Category.css";
 
 export const Artists = React.createContext();
 export const SongList = React.createContext();
 export const Duration = React.createContext();
 export const CalculateTimeContext = React.createContext();
 
-const Album = (props) => {
+const Category = () => {
     const params = useParams();
-    document.title = params.albumName;
+    // document.title = params.category;
 
     const isDark = useContext(IsDark);
     const currentSong = useContext(PlayerContext);
-
+    
+    const [artists, setArtists] = useState([]); 
     const [loader, setLoader] = useState(false);
     const [songList, setSongList] = useState([]);
-    const [artists, setArtists] = useState([]); 
     const [totalDuration, setTotalDuration] = useState(0);
 
     const calculateSongTime = (time) => {
@@ -43,10 +43,10 @@ const Album = (props) => {
     useEffect(() => {
         let abortController = new AbortController();
 
-        const getAlbum = async () => {
+        const getCategoryData = async () => {
             try{
                 setLoader(true);
-                const response = await axios.get(apiLinks.getAlbumDetails+params.albumName, {
+                const response = await axios.get(apiLinks.getCategoryByName+params.category, {
                     headers: {
                         'content-type': "application/json"
                     },
@@ -67,14 +67,13 @@ const Album = (props) => {
             }
             catch(err){
                 console.log(err);
-                // Error(err.message);
             }
             finally{
                 setLoader(false);
             }
         };
 
-        getAlbum();
+        getCategoryData();
 
         return () => {
             if(abortController){
@@ -98,7 +97,7 @@ const Album = (props) => {
                     <SongList.Provider value={songList}>
                         <Artists.Provider value={artists}>
                             <Duration.Provider value={totalDuration}>
-                                <Header />
+                                <Header title={params.category} />
                                 <Body />
                                 <Footer />
                             </Duration.Provider>
@@ -110,4 +109,4 @@ const Album = (props) => {
     );
 };
 
-export default Album;
+export default Category;

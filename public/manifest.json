@@ -1,6 +1,6 @@
 {
   "short_name": "Sangeet",
-  "name": "Sangeet - Music Player",
+  "name": "Sangeet - Enjoy Ad Free Music",
   "icons": [
     {
       "src": "/assets/images/192.png",
@@ -16,7 +16,7 @@
   ],
   "start_url": "/",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "background_color": "#000000",
   "scope": "/"
 }

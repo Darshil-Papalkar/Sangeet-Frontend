@@ -18,6 +18,7 @@ import Error from './pages/Error.js';
 import Album from './pages/Album.js';
 import Admin from './pages/admin.js';
 import Artist from "./pages/Artist.js";
+import Category from "./pages/Category";
 import Playlist from "./pages/playlist";
 import { apiLinks } from './connection.config';
 import { Subscribe, Unsubscribe } from './client/index';
@@ -321,13 +322,6 @@ const App = () => {
 
   useEffect(() => {
 
-    if(Object.keys(currentSong).length > 0){
-      document.title = currentSong.musicTitle;
-    }
-    else{
-      document.title = "Sangeet - Ad Free Music App"
-    }
-
     let abortController = new AbortController();
 
     const getAudioData = async() => {
@@ -540,6 +534,7 @@ const App = () => {
 
                               <Route exact path="/" element={<Home />} />
                               <Route path="/admin/" element={<Admin />} />
+                              <Route path="/category/:category" element={<Category />} />
                               <Route path="/album/:albumName" element={<Album />} />
                               <Route path="/artist/:artistName" element={<Artist />} />
                               <Route path="/playlist/:playlistName" element={<Playlist />} />
