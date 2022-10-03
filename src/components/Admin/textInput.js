@@ -18,7 +18,7 @@ const TextInput = (props) => {
     };
 
     const onValueChange = (event) => {
-        console.log(event);
+        // console.log(event);
         props.onChange(event.target.value);
     };
 
